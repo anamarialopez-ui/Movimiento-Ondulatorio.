@@ -1,0 +1,1851 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cuaderno Interactivo — Movimiento Ondulatorio | Serway & Jewett — Física III</title>
+<!-- Google Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+
+<style>
+/* ══════════════════════════════════════════════════════════════
+   VARIABLES & DESIGN SYSTEM
+══════════════════════════════════════════════════════════════ */
+:root {
+  --desk-bg: radial-gradient(circle at 50% 30%, #1e1b4b 0%, #0f172a 60%, #020617 100%);
+  --book-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.75), 0 0 40px rgba(99, 102, 241, 0.15);
+  --cover-bg-color: #0b1739;
+  --paper-bg: #fcfbfa;
+  --paper-edge: #e2e8f0;
+  --paper-line: rgba(147, 197, 253, 0.35);
+  --paper-margin-red: rgba(248, 113, 113, 0.65);
+  --ring-metal-1: #94a3b8;
+  --ring-metal-2: #f8fafc;
+  --ring-metal-3: #475569;
+  --primary-accent: #0284c7;
+  --cyan-accent: #00f2fe;
+  --amber-accent: #f59e0b;
+  --emerald-accent: #10b981;
+  --violet-accent: #8b5cf6;
+  --rose-accent: #f43f5e;
+  --text-dark: #1e293b;
+  --text-muted: #64748b;
+  --font-hand: 'Caveat', cursive;
+  --font-title: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --book-w: min(1320px, 96vw);
+  --book-h: min(655px, calc(100vh - 145px));
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--desk-bg);
+  font-family: var(--font-body);
+  color: var(--text-dark);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+#bg-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.45;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TOP HEADER BAR
+══════════════════════════════════════════════════════════════ */
+.top-header {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: var(--book-w);
+  padding: 8px 16px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.course-badge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.course-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #38bdf8, #818cf8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+}
+.course-title {
+  font-family: var(--font-title);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #f8fafc;
+  letter-spacing: 0.3px;
+}
+.course-sub {
+  font-size: 0.72rem;
+  color: #94a3b8;
+}
+
+.top-tabs {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.top-tab-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #cbd5e1;
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.top-tab-btn:hover {
+  background: rgba(56, 189, 248, 0.2);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  transform: translateY(-1px);
+}
+.top-tab-btn.active {
+  background: #38bdf8;
+  color: #0f172a;
+  border-color: #38bdf8;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NOTEBOOK VIEWPORT (CLOSED FRONT / OPEN BOOK / CLOSED BACK)
+══════════════════════════════════════════════════════════════ */
+.desk-viewport {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+  padding: 0 16px;
+  perspective: 2600px;
+}
+
+.notebook-spread {
+  position: relative;
+  height: var(--book-h);
+  background: var(--cover-bg-color);
+  border-radius: 12px;
+  box-shadow: var(--book-shadow);
+  display: flex;
+  transform-style: preserve-3d;
+  transition: width 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.5s ease;
+}
+
+/* ESTADO ABIERTO */
+.notebook-spread.open-mode {
+  width: var(--book-w);
+}
+.notebook-spread.open-mode::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  background: linear-gradient(135deg, #1e1b4b, #312e81, #1e1b4b);
+  border-radius: 16px;
+  z-index: -1;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.2), 0 20px 40px rgba(0, 0, 0, 0.8);
+}
+
+/* ESTADO CERRADO (PORTADA O CONTRAPORTADA DE UN SOLO FONDO) */
+.notebook-spread.closed-mode {
+  width: min(580px, 92vw);
+  background: var(--cover-bg-color);
+  border-radius: 4px 16px 16px 4px;
+  box-shadow:
+    5px 0 0 #f8fafc,
+    10px 0 0 #cbd5e1,
+    15px 0 0 #94a3b8,
+    20px 0 0 #64748b,
+    0 30px 60px rgba(0,0,0,0.85);
+  cursor: pointer;
+}
+.notebook-spread.closed-mode::before {
+  content: '';
+  position: absolute;
+  inset: -5px -22px -5px -6px;
+  background: var(--cover-bg-color);
+  border-radius: 8px 18px 18px 8px;
+  z-index: -1;
+}
+
+/* Contraportada cerrada (lomo a la derecha) */
+.notebook-spread.closed-back-mode {
+  width: min(580px, 92vw);
+  background: var(--cover-bg-color);
+  border-radius: 16px 4px 4px 16px;
+  box-shadow:
+    -5px 0 0 #f8fafc,
+    -10px 0 0 #cbd5e1,
+    -15px 0 0 #94a3b8,
+    -20px 0 0 #64748b,
+    0 30px 60px rgba(0,0,0,0.85);
+  cursor: pointer;
+}
+.notebook-spread.closed-back-mode::before {
+  content: '';
+  position: absolute;
+  inset: -5px -6px -5px -22px;
+  background: var(--cover-bg-color);
+  border-radius: 18px 8px 8px 18px;
+  z-index: -1;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   METALLIC RING BINDER (ARGOLLADO REALISTA)
+══════════════════════════════════════════════════════════════ */
+.spiral-spine {
+  position: absolute;
+  top: 10px;
+  bottom: 10px;
+  width: 48px;
+  z-index: 50;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  transition: left 0.5s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.5s ease;
+}
+
+/* Posición en modo abierto (centro) */
+.notebook-spread.open-mode .spiral-spine {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Posición en modo cerrado portada (borde izquierdo, calza exacto con Portada.png) */
+.notebook-spread.closed-mode .spiral-spine {
+  left: -20px;
+  transform: none;
+}
+
+/* Posición en modo cerrado contraportada (borde derecho) */
+.notebook-spread.closed-back-mode .spiral-spine {
+  left: calc(100% - 28px);
+  transform: none;
+}
+
+.ring-loop {
+  position: relative;
+  width: 44px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ring-loop::before,
+.ring-loop::after {
+  content: '';
+  position: absolute;
+  width: 9px;
+  height: 14px;
+  background: #0f172a;
+  border-radius: 50%;
+  box-shadow: inset 1px 1px 2px rgba(0,0,0,0.8), 0 0 1px rgba(255,255,255,0.4);
+}
+.ring-loop::before { left: 1px; }
+.ring-loop::after { right: 1px; }
+
+.wire-coil {
+  position: absolute;
+  left: 3px;
+  right: 3px;
+  height: 13px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #f8fafc 0%, #cbd5e1 30%, #475569 70%, #1e293b 100%);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.45), inset 0 2px 2px rgba(255,255,255,0.9);
+  transform: rotate(-3deg);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LEFT & RIGHT PAGES
+══════════════════════════════════════════════════════════════ */
+.page-half {
+  flex: 1;
+  height: 100%;
+  position: relative;
+  background: var(--paper-bg);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.page-half.left-page {
+  border-radius: 8px 2px 2px 8px;
+  border-right: 1px solid #cbd5e1;
+  box-shadow: inset -15px 0 25px -10px rgba(0, 0, 0, 0.15), inset 3px 0 8px rgba(0,0,0,0.06);
+}
+
+.page-half.right-page {
+  border-radius: 2px 8px 8px 2px;
+  border-left: 1px solid #cbd5e1;
+  box-shadow: inset 15px 0 25px -10px rgba(0, 0, 0, 0.15), inset -3px 0 8px rgba(0,0,0,0.06);
+}
+
+.notebook-spread.closed-mode .page-half.left-page,
+.notebook-spread.closed-back-mode .page-half.left-page {
+  display: none !important;
+}
+.notebook-spread.closed-mode .page-half.right-page,
+.notebook-spread.closed-back-mode .page-half.right-page {
+  border-radius: 4px 16px 16px 4px;
+  box-shadow: none;
+  border-left: none;
+  background: var(--cover-bg-color);
+}
+
+.page-paper-lines::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 27px,
+    var(--paper-line) 27px, var(--paper-line) 28px
+  );
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.85;
+}
+
+.left-page.page-paper-lines::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  right: 48px;
+  width: 2px;
+  background: var(--paper-margin-red);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.55;
+}
+
+.right-page.page-paper-lines::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: 48px;
+  width: 2px;
+  background: var(--paper-margin-red);
+  pointer-events: none;
+  z-index: 2;
+  opacity: 0.55;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PORTADA & CONTRAPORTADA (LIMPIAS SIN BOTÓN QUE TAPE NOMBRES)
+══════════════════════════════════════════════════════════════ */
+.portada-closed-container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--cover-bg-color);
+}
+
+.portada-closed-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: left center;
+  display: block;
+}
+
+/* Contraportada (Tapa final con el mismo fondo de la portada) */
+.contraportada-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #090d16 0%, #0b1739 60%, #151b36 100%);
+  color: #f8fafc;
+  padding: 30px;
+  text-align: center;
+  position: relative;
+}
+.contraportada-title {
+  font-family: var(--font-title);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-bottom: 8px;
+}
+.contraportada-sub {
+  font-size: 0.82rem;
+  color: #94a3b8;
+  line-height: 1.6;
+  max-width: 420px;
+}
+.btn-reopen {
+  margin-top: 24px;
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #fff;
+  border: none;
+  font-family: var(--font-title);
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 10px 22px;
+  border-radius: 25px;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(2,132,199,0.4);
+  transition: all 0.25s;
+}
+.btn-reopen:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(2,132,199,0.6);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PAGE CONTENT BOX & TYPOGRAPHY
+══════════════════════════════════════════════════════════════ */
+.page-content-box {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: 100%;
+  padding: 13px 20px 13px 26px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.left-page .page-content-box {
+  padding-right: 36px;
+  padding-left: 20px;
+}
+.right-page .page-content-box {
+  padding-left: 36px;
+  padding-right: 20px;
+}
+
+.page-scrollable {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+.page-scrollable::-webkit-scrollbar { width: 5px; }
+.page-scrollable::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+.page-scrollable::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.page-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 2px solid #e2e8f0;
+  padding-bottom: 5px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+}
+.page-topic-title {
+  font-family: var(--font-title);
+  font-size: 1.02rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.page-num-pill {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #e2e8f0;
+  color: #475569;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+.theory-p {
+  font-size: 0.80rem;
+  line-height: 1.62;
+  color: #334155;
+  margin-bottom: 6px;
+}
+.theory-p strong {
+  color: #0f172a;
+  font-weight: 700;
+}
+
+.callout-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-left: 4px solid var(--primary-accent);
+  border-radius: 8px;
+  padding: 7px 11px;
+  margin: 6px 0;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+.callout-card.cyan { border-left-color: #0284c7; background: #f0f9ff; }
+.callout-card.amber { border-left-color: #d97706; background: #fffbeb; }
+.callout-card.emerald { border-left-color: #059669; background: #ecfdf5; }
+.callout-card.violet { border-left-color: #7c3aed; background: #f5f3ff; }
+.callout-card.rose { border-left-color: #e11d48; background: #fff1f2; }
+
+.callout-title {
+  font-size: 0.73rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.formula-card {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  padding: 6px 11px;
+  text-align: center;
+  margin: 6px 0;
+  font-size: 0.88rem;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.03);
+}
+
+.grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 6px 0;
+}
+
+.table-custom {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.73rem;
+  margin: 6px 0;
+  background: #ffffff;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #e2e8f0;
+}
+.table-custom th {
+  background: #f1f5f9;
+  color: #475569;
+  font-weight: 700;
+  text-align: left;
+  padding: 5px 8px;
+  border-bottom: 1px solid #cbd5e1;
+}
+.table-custom td {
+  padding: 4px 8px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #334155;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   EJERCICIOS RESUELTOS DEL SERWAY (PROBLEMAS DEL FINAL DEL PDF)
+══════════════════════════════════════════════════════════════ */
+.ejercicio-box {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 6px 0;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+.ejercicio-header {
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #e2e8f0;
+}
+.ejercicio-badge {
+  font-family: var(--font-title);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 2px 8px;
+  border-radius: 12px;
+  color: #fff;
+}
+.ejercicio-body {
+  padding: 8px 12px;
+}
+.ejercicio-enunciado {
+  font-size: 0.77rem;
+  line-height: 1.55;
+  color: #1e293b;
+  margin-bottom: 6px;
+  padding: 6px 9px;
+  background: #f8fafc;
+  border-left: 3px solid #38bdf8;
+  border-radius: 0 6px 6px 0;
+}
+.ejercicio-paso {
+  margin-bottom: 5px;
+  font-size: 0.74rem;
+  color: #334155;
+  line-height: 1.5;
+}
+.ejercicio-resultado {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+  padding: 5px 8px;
+  border-radius: 6px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  margin-top: 5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CANVAS PANEL (TEORÍA EN VIVO)
+══════════════════════════════════════════════════════════════ */
+.canvas-panel {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 6px 0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+}
+.canvas-panel-header {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  padding: 4px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.70rem;
+  font-weight: 700;
+  color: #64748b;
+}
+.canvas-btn-mini {
+  background: #e2e8f0;
+  border: none;
+  border-radius: 4px;
+  padding: 2px 7px;
+  font-size: 0.66rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #334155;
+  transition: all 0.2s;
+}
+.canvas-btn-mini:hover { background: #0284c7; color: #fff; }
+.canvas-panel canvas {
+  display: block;
+  width: 100%;
+  height: 85px;
+  background: #ffffff;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LABORATORIOS / SIMULATION EMBEDS
+══════════════════════════════════════════════════════════════ */
+.sim-embed-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #0f172a;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.sim-embed-bar {
+  background: #1e293b;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.sim-embed-title {
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f8fafc;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sim-embed-actions {
+  display: flex;
+  gap: 6px;
+}
+.sim-tool-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: #f8fafc;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.sim-tool-btn:hover {
+  background: #0284c7;
+  border-color: #38bdf8;
+}
+.sim-iframe {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: #070a12;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   3D TURNING PAGE OVERLAY
+══════════════════════════════════════════════════════════════ */
+.turning-page-sheet {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 100;
+  pointer-events: none;
+  transform-style: preserve-3d;
+  display: none;
+}
+.turning-page-sheet.flip-forward {
+  right: 0;
+  transform-origin: left center;
+  animation: flipForward 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+.turning-page-sheet.flip-backward {
+  left: 0;
+  transform-origin: right center;
+  animation: flipBackward 0.65s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+@keyframes flipForward {
+  0% { transform: rotateY(0deg); box-shadow: -10px 0 25px rgba(0,0,0,0.3); }
+  50% { box-shadow: -25px 0 40px rgba(0,0,0,0.5); }
+  100% { transform: rotateY(-180deg); box-shadow: 10px 0 25px rgba(0,0,0,0.1); }
+}
+@keyframes flipBackward {
+  0% { transform: rotateY(0deg); box-shadow: 10px 0 25px rgba(0,0,0,0.3); }
+  50% { box-shadow: 25px 0 40px rgba(0,0,0,0.5); }
+  100% { transform: rotateY(180deg); box-shadow: -10px 0 25px rgba(0,0,0,0.1); }
+}
+
+.turning-front, .turning-back {
+  position: absolute;
+  inset: 0;
+  background: var(--paper-bg);
+  backface-visibility: hidden;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.08);
+}
+.turning-back {
+  transform: rotateY(180deg);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BOTTOM NAVIGATION CONSOLE
+══════════════════════════════════════════════════════════════ */
+.bottom-nav-console {
+  position: relative;
+  z-index: 20;
+  width: 100%;
+  max-width: var(--book-w);
+  padding: 6px 16px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.nav-controls-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 30px;
+  padding: 6px 16px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+}
+
+.btn-nav-action {
+  background: linear-gradient(135deg, #0284c7, #2563eb);
+  color: #ffffff;
+  border: none;
+  font-family: var(--font-title);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 7px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(2, 132, 199, 0.35);
+  flex-shrink: 0;
+}
+.btn-nav-action:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(2, 132, 199, 0.5);
+  background: linear-gradient(135deg, #0369a1, #1d4ed8);
+}
+.btn-nav-action:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+.slider-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 580px;
+}
+
+.page-range-slider {
+  flex: 1;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.page-range-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #38bdf8;
+  cursor: pointer;
+  box-shadow: 0 0 10px #38bdf8;
+  border: 2px solid #ffffff;
+  transition: transform 0.15s;
+}
+.page-range-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+}
+
+.page-indicator-pill {
+  font-family: var(--font-title);
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #f8fafc;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px 12px;
+  border-radius: 12px;
+  white-space: nowrap;
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.page-topic-indicator {
+  font-size: 0.72rem;
+  color: #38bdf8;
+  font-weight: 600;
+  max-width: 190px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FULLSCREEN MODAL FOR SIMULATIONS
+══════════════════════════════════════════════════════════════ */
+.fs-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #090d16;
+  display: none;
+  flex-direction: column;
+}
+.fs-modal.active { display: flex; }
+.fs-modal-bar {
+  background: #1e293b;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.fs-modal-title {
+  color: #fff;
+  font-family: var(--font-title);
+  font-size: 1rem;
+  font-weight: 700;
+}
+.fs-close-btn {
+  background: #ef4444;
+  color: #fff;
+  border: none;
+  padding: 5px 14px;
+  border-radius: 6px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.fs-iframe {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+</style>
+</head>
+<body>
+
+<canvas id="bg-ambient"></canvas>
+
+<!-- ══════════════════════════════════════════════════════════════
+     TOP HEADER (ASIGNATURA & PESTAÑAS RÁPIDAS)
+══════════════════════════════════════════════════════════════ -->
+<header class="top-header">
+  <div class="course-badge">
+    <div class="course-icon">🌊</div>
+    <div>
+      <div class="course-title">Física III — Cuaderno Interactivo de Movimiento Ondulatorio</div>
+      <div class="course-sub">Teoría y Ejercicios Extraídos del Libro Serway & Jewett · Cap. 16</div>
+    </div>
+  </div>
+
+  <nav class="top-tabs" id="topTabsNav">
+    <button class="top-tab-btn active" onclick="jumpToSpread(0)"><span>📕</span> Portada</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(1)"><span>🌊</span> 1. Ondas Viajeras</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(2)"><span>🔊</span> 2. Ondas Sonoras</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(3)"><span>🎸</span> 3. Ondas Estacionarias</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(4)"><span>🚑</span> 4. Efecto Doppler</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(5)"><span>📐</span> 5. Formulario & Taller</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(6)"><span>📚</span> 6. Bibliografía</button>
+    <button class="top-tab-btn" onclick="jumpToSpread(7)"><span>📘</span> Cierre</button>
+  </nav>
+</header>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DESK VIEWPORT & NOTEBOOK SPREAD
+══════════════════════════════════════════════════════════════ -->
+<main class="desk-viewport">
+  <div class="notebook-spread closed-mode" id="notebookSpread" onclick="handleNotebookClick(event)">
+
+    <!-- ARGOLLAS METÁLICAS (CALZADAS AL BORDE EN CERRADO Y AL CENTRO EN ABIERTO) -->
+    <div class="spiral-spine" id="spiralSpine"></div>
+
+    <!-- 3D TURNING SHEET EFFECT -->
+    <div class="turning-page-sheet" id="turningSheet">
+      <div class="turning-front"></div>
+      <div class="turning-back"></div>
+    </div>
+
+    <!-- HOJA IZQUIERDA -->
+    <div class="page-half left-page page-paper-lines" id="leftPage"></div>
+
+    <!-- HOJA DERECHA (O PORTADA/CONTRAPORTADA ÚNICA EN MODO CERRADO) -->
+    <div class="page-half right-page page-paper-lines" id="rightPage"></div>
+
+  </div>
+</main>
+
+<!-- ══════════════════════════════════════════════════════════════
+     CONSOLA DE NAVEGACIÓN INFERIOR (BOTONES Y DESLIZADOR ABAJO)
+══════════════════════════════════════════════════════════════ -->
+<footer class="bottom-nav-console">
+  <div class="nav-controls-row">
+    <!-- Botón Atrás / Cerrar -->
+    <button class="btn-nav-action" id="btnPrevSpread" onclick="stepSpread(-1)">
+      <span>◀</span> <span id="btnPrevLabel">Atrás</span>
+    </button>
+
+    <!-- Contenedor Deslizador -->
+    <div class="slider-container">
+      <span style="font-size:0.75rem; color:#94a3b8; font-weight:600;">Deslizar:</span>
+      <input type="range" min="0" max="7" value="0" step="1" class="page-range-slider" id="spreadSlider" oninput="onSliderMove(this.value)">
+      <div class="page-indicator-pill" id="pageIndicatorText">Portada (Cerrado)</div>
+      <div class="page-topic-indicator" id="spreadTopicLabel">Cuaderno de Física III</div>
+    </div>
+
+    <!-- Botón Adelante / Abrir -->
+    <button class="btn-nav-action" id="btnNextSpread" onclick="stepSpread(1)">
+      <span id="btnNextLabel">Abrir Cuaderno</span> <span>▶</span>
+    </button>
+  </div>
+</footer>
+
+<!-- ══════════════════════════════════════════════════════════════
+     MODAL DE PANTALLA COMPLETA PARA SIMULACIONES
+══════════════════════════════════════════════════════════════ -->
+<div class="fs-modal" id="fsModal">
+  <div class="fs-modal-bar">
+    <div class="fs-modal-title" id="fsModalTitle">Simulación en Pantalla Completa</div>
+    <button class="fs-close-btn" onclick="closeFullscreenSim()">✕ Volver al Cuaderno</button>
+  </div>
+  <iframe id="fsIframe" class="fs-iframe" allow="autoplay"></iframe>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SCRIPTS & CONTENIDO COMPLETO (EXTRAÍDO DEL PDF DEL SERWAY)
+══════════════════════════════════════════════════════════════ -->
+<script>
+const SPREADS_DATA = [
+  /* ── SPREAD 0: PORTADA CERRADA (LIMPIA SIN BOTÓN QUE TAPE NOMBRES) ── */
+  {
+    topic: "Portada — Cuaderno Cerrado",
+    tabIndex: 0,
+    isClosed: true,
+    isBackClosed: false,
+    left: ``,
+    right: `
+      <div class="portada-closed-container" title="Haz clic sobre la portada para abrir el cuaderno">
+        <img src="imagenes/Portada.png" alt="Portada Movimiento Ondulatorio Física III"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div style="display:none;position:absolute;inset:0;background:var(--cover-bg-color);flex-direction:column;align-items:center;justify-content:center;color:#fff;padding:20px;text-align:center;">
+          <div style="font-size:3.5rem;">🌊</div>
+          <h1 style="font-family:'Outfit',sans-serif;font-size:1.8rem;margin:10px 0;color:#38bdf8;">Movimiento Ondulatorio</h1>
+          <p style="font-size:0.85rem;color:#cbd5e1;">Física III · Ingeniería Industrial</p>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 1: TEMA 1 — PROPAGACIÓN Y ONDA VIAJERA (SEC. 16.1 & 16.2 SERWAY) ── */
+  {
+    topic: "1. Ondas Viajeras",
+    tabIndex: 1,
+    isClosed: false,
+    isBackClosed: false,
+    left: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#0284c7;">
+            <span>🌊</span> 16.1 & 16.2 Ondas Viajeras
+          </div>
+          <span class="page-num-pill">Pág. 1</span>
+        </div>
+        <div class="page-scrollable">
+          <p class="theory-p">
+            Según el <strong>Capítulo 16 (Serway & Jewett)</strong>, el movimiento ondulatorio representa la <em>transferencia de energía e ímpetu a través del espacio sin transferencia de materia</em>. Toda onda mecánica requiere: (1) una fuente de perturbación, (2) un medio elástico con partículas perturbables, y (3) un mecanismo físico de acoplamiento mutuo.
+          </p>
+
+          <div class="grid-2col">
+            <div class="callout-card cyan" style="margin:0;">
+              <div class="callout-title" style="color:#0284c7;">🔀 Onda Transversal</div>
+              <div style="font-size:0.73rem;color:#334155;">Los elementos del medio se desplazan <strong>perpendiculares</strong> a la dirección de propagación (ej. pulso en cuerda tensa).</div>
+            </div>
+            <div class="callout-card amber" style="margin:0;">
+              <div class="callout-title" style="color:#d97706;">↔ Onda Longitudinal</div>
+              <div style="font-size:0.73rem;color:#334155;">Los elementos del medio se desplazan <strong>paralelos</strong> a la dirección de propagación (ej. compresiones en resorte o sonido).</div>
+            </div>
+          </div>
+
+          <div class="formula-card">
+            <div style="font-size:0.7rem;font-weight:700;color:#0284c7;text-transform:uppercase;margin-bottom:3px;">Función de Onda Sinusoidal Unidimensional (Ec. 16.10 & 16.13)</div>
+            $$y(x,t) = A \\sin(kx - \\omega t + \\phi)$$
+            <div style="font-size:0.68rem;color:#64748b;margin-top:3px;">
+              $k = \\frac{2\\pi}{\\lambda}$ (número de onda) &nbsp;|&nbsp; $\\omega = 2\\pi f = \\frac{2\\pi}{T}$ (frec. angular) &nbsp;|&nbsp; $v = \\lambda f = \\frac{\\omega}{k}$
+            </div>
+          </div>
+
+          <p class="theory-p" style="font-size:0.74rem;">
+            Cada elemento oscila verticalmente con M.A.S. Su rapidez transversal y aceleración máxima son:
+            $$v_{y,\\max} = \\omega A \\qquad a_{y,\\max} = \\omega^2 A$$
+          </p>
+
+          <div class="canvas-panel">
+            <div class="canvas-panel-header">
+              <span>Oscilación en Vivo — Onda Viajera</span>
+              <button class="canvas-btn-mini" onclick="toggleWavePlay('traveling')">⏸ Pausar</button>
+            </div>
+            <canvas id="canvasTravelingWave"></canvas>
+          </div>
+        </div>
+      </div>
+    `,
+    right: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#0284c7;">
+            <span>✏️</span> Problemas del Final del PDF (Págs. 445-446)
+          </div>
+          <span class="page-num-pill">Pág. 2</span>
+        </div>
+        <div class="page-scrollable">
+          <!-- Problema 1 del final del PDF -->
+          <div class="ejercicio-box">
+            <div class="ejercicio-header">
+              <span class="ejercicio-badge" style="background:#0284c7;">Problema 1 (Final PDF - Pág. 445)</span>
+              <span style="font-size:0.7rem;color:#64748b;font-weight:600;">Ondas Sísmicas P y S</span>
+            </div>
+            <div class="ejercicio-body">
+              <div class="ejercicio-enunciado">
+                Una estación sismográfica recibe ondas S y P de un terremoto, separadas en tiempo por $\\Delta t = 17.3\\text{ s}$. Las ondas viajaron por la misma trayectoria con rapideces de $v_S = 4.50\\text{ km/s}$ y $v_P = 7.80\\text{ km/s}$. Encuentre la distancia $d$ desde el sismógrafo al foco del terremoto.
+              </div>
+              <div class="ejercicio-paso">
+                <strong>Planteamiento temporal:</strong>
+                $$\\Delta t = t_S - t_P = \\frac{d}{v_S} - \\frac{d}{v_P} = d\\left(\\frac{1}{v_S} - \\frac{1}{v_P}\\right)$$
+                $$d = \\frac{\\Delta t}{\\frac{1}{v_S} - \\frac{1}{v_P}} = \\frac{17.3\\text{ s}}{\\frac{1}{4.50} - \\frac{1}{7.80}} = \\frac{17.3}{0.2222 - 0.1282} = \\frac{17.3}{0.0940}$$
+              </div>
+              <div class="ejercicio-resultado">
+                ✅ <strong>Distancia al epicentro:</strong> $d = \\mathbf{184\\text{ km}} = 1.84\\times 10^5\\text{ m}$.
+              </div>
+            </div>
+          </div>
+
+          <!-- Problema 11 del final del PDF -->
+          <div class="ejercicio-box" style="margin-top:6px;">
+            <div class="ejercicio-header">
+              <span class="ejercicio-badge" style="background:#d97706;">Problema 11 (Final PDF - Pág. 446)</span>
+              <span style="font-size:0.7rem;color:#64748b;font-weight:600;">Tensión requerida en cuerda</span>
+            </div>
+            <div class="ejercicio-body">
+              <div class="ejercicio-enunciado">
+                Ondas transversales viajan a $v_1 = 20.0\\text{ m/s}$ sobre una cuerda bajo una tensión de $T_1 = 6.00\\text{ N}$. ¿Qué tensión $T_2$ se requiere para una rapidez de $v_2 = 30.0\\text{ m/s}$ sobre la misma cuerda?
+              </div>
+              <div class="ejercicio-paso">
+                Como la densidad lineal $\\mu$ es constante: $v = \\sqrt{T/\\mu} \\implies \\frac{v_2}{v_1} = \\sqrt{\\frac{T_2}{T_1}}$
+                $$T_2 = T_1\\left(\\frac{v_2}{v_1}\\right)^2 = (6.00\\text{ N})\\left(\\frac{30.0}{20.0}\\right)^2 = 6.00 \\times 2.25 = \\mathbf{13.5\\text{ N}}$$
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 2: TEMA 2 — ONDAS SONORAS Y RAPIDEZ DEL SONIDO (SEC. 16.6, 16.7 Y 16.8 SERWAY) ── */
+  {
+    topic: "2. Ondas Sonoras",
+    tabIndex: 2,
+    isClosed: false,
+    isBackClosed: false,
+    left: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#0284c7;">
+            <span>🔊</span> 16.6, 16.7 & 16.8 Ondas Sonoras
+          </div>
+          <span class="page-num-pill">Pág. 3</span>
+        </div>
+        <div class="page-scrollable">
+          <p class="theory-p">
+            <strong>Naturaleza Acústica (Serway Sec. 16.6):</strong> Las ondas sonoras son <strong>ondas mecánicas longitudinales</strong> que se propagan mediante oscilaciones moleculares paralelas a la dirección de avance, creando alternancias continuas de <strong>compresión</strong> (alta densidad/presión) y <strong>enrarecimiento</strong> (baja densidad/presión).
+          </p>
+
+          <div class="grid-2col">
+            <div class="formula-card" style="margin:0;">
+              <div style="font-size:0.68rem;font-weight:700;color:#0284c7;text-transform:uppercase;">Desplazamiento Molecular</div>
+              $$s(x,t) = s_{\\max}\\cos(kx - \\omega t)$$
+              <div style="font-size:0.65rem;color:#64748b;">$s_{\\max}$: Amplitud de desplazamiento</div>
+            </div>
+            <div class="formula-card" style="margin:0;">
+              <div style="font-size:0.68rem;font-weight:700;color:#d97706;text-transform:uppercase;">Variación de Presión ($90^\\circ$)</div>
+              $$\\Delta P(x,t) = \\Delta P_{\\max}\\sin(kx - \\omega t)$$
+              <div style="font-size:0.65rem;color:#64748b;">$\\Delta P_{\\max} = \\rho v \\omega s_{\\max}$</div>
+            </div>
+          </div>
+
+          <div class="callout-card cyan" style="margin-top:6px;">
+            <div class="callout-title" style="color:#0284c7;">Rapidez del Sonido en Fluidos e Intensidad (Ec. 16.35, 16.38 & 16.41)</div>
+            $$v = \\sqrt{\\frac{B}{\\rho}} \\approx 331\\sqrt{1 + \\frac{T_C}{273}}\\text{ m/s} \\qquad I = \\frac{(\\Delta P_{\\max})^2}{2\\rho v} = \\frac{P_{\\text{prom}}}{4\\pi r^2}$$
+            $$Nivel\\;Sonoro:\\; \\beta = 10\\log_{10}\\left(\\frac{I}{I_0}\\right)\\text{ [dB]} \\quad (I_0 = 10^{-12}\\text{ W/m}^2)$$
+          </div>
+        </div>
+      </div>
+    `,
+    right: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#0284c7;">
+            <span>✏️</span> Problema 23 del Final del PDF (Pág. 447)
+          </div>
+          <span class="page-num-pill">Pág. 4</span>
+        </div>
+        <div class="page-scrollable">
+          <div class="ejercicio-box">
+            <div class="ejercicio-header">
+              <span class="ejercicio-badge" style="background:#0284c7;">Problema 23 (Final PDF - Pág. 447)</span>
+              <span style="font-size:0.7rem;color:#64748b;font-weight:600;">Ecuación de Onda Sonora</span>
+            </div>
+            <div class="ejercicio-body">
+              <div class="ejercicio-enunciado">
+                <strong>Enunciado oficial del texto:</strong><br>
+                Una onda sonora sinusoidal se mueve a través de un medio y se describe mediante la función de desplazamiento:
+                $$s(x,t) = 2.00\\cos(15.7x - 858t)$$
+                donde $s$ está en micrómetros ($\mu\\text{m}$), $x$ en metros y $t$ en segundos.<br>
+                Encuentre: (a) la amplitud, (b) la longitud de onda, (c) la rapidez de esta onda, (d) el desplazamiento instantáneo en $x = 0.0500\\text{ m}$ y $t = 3.00\\text{ ms}$, y (e) la rapidez máxima oscilatoria.
+              </div>
+
+              <div class="ejercicio-paso">
+                <strong>(a) Amplitud de desplazamiento:</strong><br>
+                $$s_{\\max} = \\mathbf{2.00\\,\\mu\\text{m}} = 2.00\\times 10^{-6}\\text{ m}$$
+                <strong>(b) Longitud de onda:</strong>
+                $$\\lambda = \\frac{2\\pi}{k} = \\frac{2\\pi}{15.7\\text{ rad/m}} = \\mathbf{0.400\\text{ m}} = 40.0\\text{ cm}$$
+                <strong>(c) Rapidez del sonido en el medio:</strong>
+                $$v = \\frac{\\omega}{k} = \\frac{858\\text{ rad/s}}{15.7\\text{ rad/m}} = \\mathbf{54.6\\text{ m/s}}$$
+                <strong>(d) Desplazamiento en $x = 0.0500\\text{ m}, t = 0.00300\\text{ s}$:</strong>
+                $$s = 2.00\\cos(15.7(0.0500) - 858(0.00300)) = 2.00\\cos(0.785 - 2.574)$$
+                $$s = 2.00\\cos(-1.789\\text{ rad}) = 2.00(-0.2185) \\approx \\mathbf{-0.437\\,\\mu\\text{m}}$$
+                <strong>(e) Rapidez máxima de una partícula:</strong>
+                $$v_{\\max} = \\omega s_{\\max} = (858\\text{ s}^{-1})(2.00\\times 10^{-6}\\text{ m}) = \\mathbf{1.72\\times 10^{-3}\\text{ m/s}} = 1.72\\text{ mm/s}$$
+              </div>
+
+              <div class="ejercicio-resultado">
+                ✅ <strong>Conclusión:</strong> La onda acústica viaja a $54.6\\text{ m/s}$ mientras las moléculas vibran a solo $1.72\\text{ mm/s}$.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 3: TEMA 3 — ONDAS ESTACIONARIAS (SUPERPOSICIÓN & LAB LENTO EN n=1) ── */
+  {
+    topic: "3. Ondas Estacionarias",
+    tabIndex: 3,
+    isClosed: false,
+    isBackClosed: false,
+    left: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#059669;">
+            <span>🎸</span> Ondas Estacionarias & Resonancia
+          </div>
+          <span class="page-num-pill">Pág. 5</span>
+        </div>
+        <div class="page-scrollable">
+          <p class="theory-p">
+            Al superponerse dos ondas armónicas idénticas en sentidos opuestos ($y_1 = A\\sin(kx - \\omega t)$ y $y_2 = A\\sin(kx + \\omega t)$), el flujo neto de potencia promedio es nulo y se origina una <strong>onda estacionaria</strong> con puntos estacionarios de elongación nula (<strong>Nodos</strong>) y puntos de elongación máxima $2A$ (<strong>Antinodos</strong>):
+          </p>
+
+          <div class="formula-card">
+            <div style="font-size:0.7rem;font-weight:700;color:#059669;text-transform:uppercase;margin-bottom:3px;">Ecuación de Onda Estacionaria (Extremos Fijos)</div>
+            $$y(x,t) = [2A \\sin(kx)] \\cos(\\omega t)$$
+            <div style="font-size:0.68rem;color:#475569;margin-top:2px;">
+              Posición de Nodos: $x_N = m\\frac{\\lambda}{2}$ &nbsp;|&nbsp; Posición de Antinodos: $x_A = (2m+1)\\frac{\\lambda}{4}$
+            </div>
+          </div>
+
+          <div class="callout-card emerald" style="margin-top:4px;">
+            <div class="callout-title" style="color:#059669;">Condición de Resonancia en Cuerda de Longitud $L$</div>
+            $$\\lambda_n = \\frac{2L}{n}, \\qquad f_n = n \\left(\\frac{v}{2L}\\right) = n f_1 \\quad (n = 1, 2, 3, \\dots)$$
+            <div style="font-size:0.72rem;color:#334155;margin-top:2px;">
+              • $n = 1$: <strong>Modo Fundamental</strong> (2 nodos en los extremos, 1 vientre central, $\\lambda_1 = 2L$).<br>
+              • $n = 2, 3, \\dots$: Armónicos superiores.
+            </div>
+          </div>
+
+          <div class="ejercicio-box" style="margin-top:6px;">
+            <div class="ejercicio-header" style="background:#ecfdf5;">
+              <span class="ejercicio-badge" style="background:#059669;">Problema de Resonancia</span>
+              <span style="font-size:0.7rem;color:#065f46;font-weight:600;">Modo Fundamental (n=1)</span>
+            </div>
+            <div class="ejercicio-body" style="padding:6px 10px;">
+              <div class="ejercicio-enunciado" style="border-left-color:#10b981;font-size:0.74rem;padding:5px 8px;margin-bottom:4px;">
+                Una cuerda tensa de $L = 2.00\\text{ m}$ con $\\mu = 0.01\\text{ kg/m}$ y $T = 100\\text{ N}$ oscila en su modo fundamental ($n=1$). Calcule $v$, $\\lambda_1$ y la frecuencia $f_1$.
+              </div>
+              <div class="ejercicio-paso" style="font-size:0.73rem;">
+                $$v = \\sqrt{\\frac{T}{\\mu}} = \\sqrt{\\frac{100}{0.01}} = \\mathbf{100\\text{ m/s}}$$
+                $$\\lambda_1 = 2L = 2(2.00) = \\mathbf{4.00\\text{ m}}; \\quad f_1 = \\frac{v}{2L} = \\frac{100}{4.00} = \\mathbf{25.0\\text{ Hz}}$$
+              </div>
+              <div class="ejercicio-resultado" style="font-size:0.72rem;padding:3px 7px;">
+                ✅ <strong>Configuración del Lab:</strong> El simulador a la derecha inicia exactamente en $n=1$ y a velocidad pausada ($0.10x$).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    right: `
+      <div class="page-content-box" style="padding:8px 12px 8px 24px;">
+        <div class="sim-embed-container">
+          <div class="sim-embed-bar">
+            <div class="sim-embed-title">
+              <span>🎸</span> Laboratorio Virtual: Ondas Estacionarias (Modo n = 1, Velocidad Lenta)
+            </div>
+            <div class="sim-embed-actions">
+              <button class="sim-tool-btn" onclick="openFullscreenSim('OndasEstacionarias.html?embed=notebook', 'Laboratorio: Ondas Estacionarias')">
+                <span>⛶</span> Pantalla Completa
+              </button>
+              <button class="sim-tool-btn" onclick="reloadIframe('frameStanding')">
+                <span>🔄</span> Reiniciar
+              </button>
+            </div>
+          </div>
+          <!-- Inicia automáticamente en modo n=1, velocidad lenta 0.10x y lienzo en la parte superior sin scroll -->
+          <iframe id="frameStanding" class="sim-iframe" src="OndasEstacionarias.html?embed=notebook" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 4: TEMA 4 — EFECTO DOPPLER ACÚSTICO (SEC. 16.9 SERWAY) ── */
+  {
+    topic: "4. Efecto Doppler",
+    tabIndex: 4,
+    isClosed: false,
+    isBackClosed: false,
+    left: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#e11d48;">
+            <span>🚑</span> 16.9 Efecto Doppler Acústico
+          </div>
+          <span class="page-num-pill">Pág. 7</span>
+        </div>
+        <div class="page-scrollable">
+          <p class="theory-p">
+            <strong>Fundamento Físico (Serway Sec. 16.9, Pág. 438-440):</strong> Variación en la frecuencia que percibe un observador debido al movimiento relativo entre la fuente y el receptor a través del aire.
+          </p>
+
+          <div class="formula-card">
+            <div style="font-size:0.7rem;font-weight:700;color:#e11d48;text-transform:uppercase;margin-bottom:3px;">Expresión General de Corrimiento Doppler (Ec. 16.46)</div>
+            $$f' = f \\left( \\frac{v + v_O}{v - v_S} \\right)$$
+            <div style="font-size:0.68rem;color:#475569;margin-top:2px;">
+              Convención formal del libro: $+v_O$ (observador hacia la fuente) y $+v_S$ (fuente hacia el observador) $\implies f' > f$ (Tono Agudo).
+            </div>
+          </div>
+
+          <!-- Problema 38 del final del PDF -->
+          <div class="ejercicio-box" style="margin-top:6px;">
+            <div class="ejercicio-header" style="background:#fff1f2;">
+              <span class="ejercicio-badge" style="background:#e11d48;">Problema 38 (Final PDF - Pág. 448)</span>
+              <span style="font-size:0.7rem;color:#9f1239;font-weight:600;">Sonar de Submarinos en Movimiento</span>
+            </div>
+            <div class="ejercicio-body" style="padding:6px 10px;">
+              <div class="ejercicio-enunciado" style="border-left-color:#e11d48;font-size:0.74rem;padding:5px 8px;margin-bottom:4px;">
+                El submarino A viaja a $v_A = 11.0\\text{ m/s}$ emitiendo señal de sonar a $f = 5.27\\times 10^3\\text{ Hz}$ hacia adelante. El submarino B está enfrente y viaja a $v_B = 3.00\\text{ m/s}$ en la misma dirección ($v_{agua} = 1533\\text{ m/s}$). Calcule la frecuencia detectada por el tripulante en B.
+              </div>
+              <div class="ejercicio-paso" style="font-size:0.72rem;">
+                <strong>Identificación de signos:</strong><br>
+                Fuente A se mueve hacia B: signo $(+)$ en denominador $\implies (v - v_A) = (1533 - 11.0)$.<br>
+                Observador B se aleja de A: signo $(-)$ en numerador $\implies (v - v_B) = (1533 - 3.00)$.
+                $$f' = f\\left(\\frac{v - v_B}{v - v_A}\\right) = (5270\\text{ Hz})\\left(\\frac{1533 - 3.00}{1533 - 11.0}\\right) = (5270)\\left(\\frac{1530}{1522}\\right) = \\mathbf{5298\\text{ Hz}}$$
+              </div>
+              <div class="ejercicio-resultado" style="font-size:0.72rem;padding:3px 7px;background:#fff1f2;border-color:#fecdd3;color:#9f1239;">
+                ✅ <strong>Resultado:</strong> Frecuencia detectada en B $= \\mathbf{5.30\\times 10^3\\text{ Hz}}$ ($5298\\text{ Hz}$, mayor que la emitida).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `,
+    right: `
+      <div class="page-content-box" style="padding:8px 12px 8px 24px;">
+        <div class="sim-embed-container">
+          <div class="sim-embed-bar">
+            <div class="sim-embed-title">
+              <span>🚑</span> Laboratorio Virtual: Efecto Doppler (Lienzo en la Parte Superior)
+            </div>
+            <div class="sim-embed-actions">
+              <button class="sim-tool-btn" onclick="openFullscreenSim('EfectoDoppler.html?embed=notebook', 'Laboratorio: Efecto Doppler')">
+                <span>⛶</span> Pantalla Completa
+              </button>
+              <button class="sim-tool-btn" onclick="reloadIframe('frameDoppler')">
+                <span>🔄</span> Reiniciar
+              </button>
+            </div>
+          </div>
+          <!-- Inicia con el lienzo inmediatamente en la parte superior sin scroll -->
+          <iframe id="frameDoppler" class="sim-iframe" src="EfectoDoppler.html?embed=notebook" allow="autoplay" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 5: TEMA 5 — ECUACIÓN DE ONDA LINEAL & DECIBELES (SEC. 16.5 & 16.8 SERWAY) ── */
+  {
+    topic: "5. Formulario & Taller",
+    tabIndex: 5,
+    isClosed: false,
+    isBackClosed: false,
+    left: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#7c3aed;">
+            <span>📐</span> 16.5 Ecuación de Onda Lineal
+          </div>
+          <span class="page-num-pill">Pág. 9</span>
+        </div>
+        <div class="page-scrollable">
+          <p class="theory-p">
+            <strong>Deducción de la Ecuación Diferencial (Serway pág. 428):</strong> Aplicando la 2da ley de Newton a un elemento $\Delta x$ con pendientes pequeñas $\tan\theta \approx \frac{\partial y}{\partial x}$:
+            $$\sum F_y = T\left[\left(\frac{\partial y}{\partial x}\right)_B - \left(\frac{\partial y}{\partial x}\right)_A\right] = \mu \Delta x \frac{\partial^2 y}{\partial t^2}$$
+          </p>
+
+          <div class="formula-card">
+            <div style="font-size:0.7rem;font-weight:700;color:#7c3aed;text-transform:uppercase;margin-bottom:3px;">Ecuación de Onda Lineal General (Ec. 16.27)</div>
+            $$\\frac{\\partial^2 y}{\\partial x^2} = \\frac{1}{v^2} \\frac{\\partial^2 y}{\\partial t^2}$$
+            <div style="font-size:0.68rem;color:#475569;margin-top:2px;">Toda función dos veces diferenciable $f(x \\mp vt)$ satisface idénticamente esta ecuación.</div>
+          </div>
+
+          <table class="table-custom">
+            <thead>
+              <tr><th>Concepto Físico (Cap. 16)</th><th>Ecuación Matemática</th><th>Unidad SI</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Rapidez onda viajera</strong></td><td>$v = \\lambda f = \\frac{\\omega}{k}$</td><td>$\\text{m/s}$</td></tr>
+              <tr><td><strong>Rapidez cuerda tensada</strong></td><td>$v = \\sqrt{T / \\mu}$</td><td>$\\text{m/s}$</td></tr>
+              <tr><td><strong>Rapidez sonido en gas</strong></td><td>$v = \\sqrt{B / \\rho}$</td><td>$\\text{m/s}$</td></tr>
+              <tr><td><strong>Potencia transmitida</strong></td><td>$P = \\frac{1}{2}\\mu\\omega^2 A^2 v$</td><td>$\\text{W}$</td></tr>
+              <tr><td><strong>Nivel de sonido</strong></td><td>$\\beta = 10\\log_{10}(I / I_0)$</td><td>$\\text{dB}$</td></tr>
+              <tr><td><strong>Efecto Doppler</strong></td><td>$f' = f \\left(\\frac{v \\pm v_O}{v \\mp v_S}\\right)$</td><td>$\\text{Hz}$</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `,
+    right: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#0284c7;">
+            <span>✏️</span> Problema 34 del Final del PDF (Pág. 447)
+          </div>
+          <span class="page-num-pill">Pág. 10</span>
+        </div>
+        <div class="page-scrollable">
+          <!-- Problema 34 del final del PDF -->
+          <div class="ejercicio-box">
+            <div class="ejercicio-header">
+              <span class="ejercicio-badge" style="background:#0284c7;">Problema 34 (Final PDF - Pág. 447)</span>
+              <span style="font-size:0.7rem;color:#64748b;font-weight:600;">Explosión Sonora y Nivel de Decibeles</span>
+            </div>
+            <div class="ejercicio-body">
+              <div class="ejercicio-enunciado">
+                Un cohete explota a una altura de $h = 100\\text{ m}$ sobre el suelo. Un observador directamente debajo experimenta una intensidad promedio de $I = 7.00\\times 10^{-2}\\text{ W/m}^2$ durante $\\Delta t = 0.200\\text{ s}$.<br>
+                (a) ¿Cuál es el nivel sonoro en decibeles que escucha el observador?<br>
+                (b) ¿Cuál es la energía sonora total emitida por la explosión esférica?
+              </div>
+              <div class="ejercicio-paso">
+                <strong>(a) Nivel sonoro en decibeles:</strong>
+                $$\\beta = 10\\log_{10}\\left(\\frac{7.00\\times 10^{-2}\\text{ W/m}^2}{1.00\\times 10^{-12}\\text{ W/m}^2}\\right) = 10\\log_{10}(7.00\\times 10^{10}) = \\mathbf{108.5\\text{ dB}}$$
+                <strong>(b) Potencia y energía sonora total:</strong>
+                $$P_{\\text{prom}} = 4\\pi r^2 I = 4\\pi(100\\text{ m})^2(7.00\\times 10^{-2}\\text{ W/m}^2) = 8.796\\times 10^4\\text{ W}$$
+                $$E_{\\text{total}} = P_{\\text{prom}} \\Delta t = (8.796\\times 10^4\\text{ W})(0.200\\text{ s}) = \\mathbf{1.76\\times 10^4\\text{ J}} = 17.6\\text{ kJ}$$
+              </div>
+              <div class="ejercicio-resultado">
+                ✅ <strong>Resultado:</strong> Nivel sonoro $= 108.5\\text{ dB}$, Energía acústica liberada $= 17.6\\text{ kJ}$.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 6: REFERENCIAS Y BIBLIOGRAFÍA ── */
+  {
+    topic: "6. Bibliografía",
+    tabIndex: 6,
+    isClosed: false,
+    isBackClosed: false,
+    left: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#0284c7;">
+            <span>📚</span> Referencias & Fuentes Bibliográficas
+          </div>
+          <span class="page-num-pill">Pág. 11</span>
+        </div>
+        <div class="page-scrollable">
+          <div class="callout-card cyan" style="margin-top:0;">
+            <div class="callout-title" style="color:#0284c7;">Texto Guía Principal</div>
+            <p style="font-size:0.77rem;color:#334155;line-height:1.6;">
+              <strong>Serway, R. A., & Jewett, J. W. (2019).</strong><br>
+              <em>Física para ciencias e ingeniería</em> (Volumen 1, 10.ª edición en español).<br>
+              • <strong>Capítulo 16:</strong> <em>Movimiento ondulatorio</em> (pp. 415–450).<br>
+              • <strong>Capítulo 17:</strong> <em>Ondas sonoras y superposición</em> (pp. 451–480).<br>
+              Ciudad de México: Cengage Learning Editores, S.A. de C.V.
+            </p>
+          </div>
+
+          <div class="callout-card amber" style="margin-top:8px;">
+            <div class="callout-title" style="color:#d97706;">Bibliografía Complementaria</div>
+            <ul style="font-size:0.74rem;color:#334155;line-height:1.6;margin-left:16px;">
+              <li><strong>Halliday, D., Resnick, R., & Walker, J. (2018).</strong> <em>Fundamentos de Física</em> (10.ª ed., Vol. 1). Grupo Editorial Patria / John Wiley & Sons.</li>
+              <li><strong>Tipler, P. A., & Mosca, G. (2010).</strong> <em>Física para la ciencia y la tecnología: Oscilaciones y Ondas</em> (Vol. 1, 6.ª ed.). Barcelona: Editorial Reverté.</li>
+              <li><strong>French, A. P. (1974).</strong> <em>Vibraciones y Ondas</em> (M.I.T. Introductory Physics Series). Barcelona: Editorial Reverté.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    `,
+    right: `
+      <div class="page-content-box">
+        <div class="page-header-row">
+          <div class="page-topic-title" style="color:#7c3aed;">
+            <span>💻</span> Recursos Virtuales y Laboratorios
+          </div>
+          <span class="page-num-pill">Pág. 12</span>
+        </div>
+        <div class="page-scrollable">
+          <div class="callout-card violet" style="margin-top:0;">
+            <div class="callout-title" style="color:#7c3aed;">Simuladores y Entorno Web Interactivo</div>
+            <p style="font-size:0.75rem;color:#334155;line-height:1.6;">
+              • <strong>Laboratorio Virtual de Ondas Estacionarias:</strong> Desarrollo original con solución analítica en tiempo real, Canvas 2D y Web Audio API.<br>
+              • <strong>Laboratorio Virtual de Efecto Doppler:</strong> Modelo cinemático de frentes circulares con retardos acústicos exactos.<br>
+              • <strong>Motor Tipográfico Matemático:</strong> KaTeX (Khan Academy).
+            </p>
+          </div>
+
+          <div class="callout-card emerald" style="margin-top:8px;">
+            <div class="callout-title" style="color:#059669;">Datos de la Asignatura</div>
+            <p style="font-size:0.75rem;color:#334155;line-height:1.6;">
+              • <strong>Asignatura:</strong> Física III (Movimiento Ondulatorio)<br>
+              • <strong>Programa:</strong> Ingeniería Industrial<br>
+              • <strong>Formato:</strong> Cuaderno Digital Interactivo Argollado
+            </p>
+          </div>
+
+          <div style="text-align:center;margin-top:14px;">
+            <button class="btn-nav-action" style="margin:0 auto;" onclick="stepSpread(1)">
+              <span>📕</span> Cerrar Cuaderno ➔
+            </button>
+          </div>
+        </div>
+      </div>
+    `
+  },
+
+  /* ── SPREAD 7: CIERRE DEL CUADERNO (CONTRAPORTADA CERRADA) ── */
+  {
+    topic: "Contraportada — Cuaderno Cerrado",
+    tabIndex: 7,
+    isClosed: false,
+    isBackClosed: true,
+    left: ``,
+    right: `
+      <div class="contraportada-container">
+        <div style="font-size:3rem;margin-bottom:10px;">🌊</div>
+        <div class="contraportada-title">Movimiento Ondulatorio</div>
+        <div style="font-size:0.88rem;color:#38bdf8;font-weight:700;margin-bottom:12px;">Física III · Ingeniería Industrial</div>
+        <div class="contraportada-sub">
+          Cuaderno interactivo completado con éxito.<br>
+          Todos los capítulos, ecuaciones y ejercicios resueltos han sido integrados con base en el texto de Serway & Jewett.
+        </div>
+        <button class="btn-reopen" onclick="jumpToSpread(0)">
+          ↺ Volver a la Portada
+        </button>
+      </div>
+    `
+  }
+];
+
+/* ══════════════════════════════════════════════════════════════
+   ESTADO Y NAVEGACIÓN
+══════════════════════════════════════════════════════════════ */
+let currentSpreadIndex = 0;
+const totalSpreads = SPREADS_DATA.length;
+let isFlipping = false;
+
+function buildSpineRings() {
+  const spine = document.getElementById('spiralSpine');
+  spine.innerHTML = '';
+  for (let i = 0; i < 14; i++) {
+    const loop = document.createElement('div');
+    loop.className = 'ring-loop';
+    loop.innerHTML = '<div class="wire-coil"></div>';
+    spine.appendChild(loop);
+  }
+}
+buildSpineRings();
+
+function renderCurrentSpread() {
+  const spread = SPREADS_DATA[currentSpreadIndex];
+  const notebookEl = document.getElementById('notebookSpread');
+  const leftEl = document.getElementById('leftPage');
+  const rightEl = document.getElementById('rightPage');
+
+  if (spread.isClosed) {
+    notebookEl.className = 'notebook-spread closed-mode';
+  } else if (spread.isBackClosed) {
+    notebookEl.className = 'notebook-spread closed-back-mode';
+  } else {
+    notebookEl.className = 'notebook-spread open-mode';
+  }
+
+  leftEl.innerHTML = spread.left;
+  rightEl.innerHTML = spread.right;
+
+  document.getElementById('spreadSlider').value = currentSpreadIndex;
+  document.getElementById('btnPrevSpread').disabled = (currentSpreadIndex === 0);
+  document.getElementById('btnNextSpread').disabled = (currentSpreadIndex === totalSpreads - 1);
+
+  const prevLabel = document.getElementById('btnPrevLabel');
+  const nextLabel = document.getElementById('btnNextLabel');
+  if (currentSpreadIndex === 0) {
+    prevLabel.textContent = "Atrás";
+    nextLabel.textContent = "Abrir Cuaderno";
+    document.getElementById('pageIndicatorText').textContent = "Portada (Cerrado)";
+  } else if (currentSpreadIndex === 1) {
+    prevLabel.textContent = "Cerrar Cuaderno";
+    nextLabel.textContent = "Hoja Siguiente";
+    document.getElementById('pageIndicatorText').textContent = `Hoja 1 de 6 (Págs. 1 - 2)`;
+  } else if (currentSpreadIndex === totalSpreads - 1) {
+    prevLabel.textContent = "Hoja Anterior";
+    nextLabel.textContent = "Fin";
+    document.getElementById('pageIndicatorText').textContent = "Contraportada (Cerrado)";
+  } else {
+    prevLabel.textContent = "Hoja Anterior";
+    nextLabel.textContent = (currentSpreadIndex === totalSpreads - 2) ? "Cerrar Cuaderno" : "Hoja Siguiente";
+    const startPage = ((currentSpreadIndex - 1) * 2) + 1;
+    const endPage = ((currentSpreadIndex - 1) * 2) + 2;
+    document.getElementById('pageIndicatorText').textContent = `Hoja ${currentSpreadIndex} de 6 (Págs. ${startPage} - ${endPage})`;
+  }
+
+  document.getElementById('spreadTopicLabel').textContent = spread.topic;
+
+  document.querySelectorAll('.top-tab-btn').forEach((btn, idx) => {
+    btn.classList.toggle('active', idx === spread.tabIndex);
+  });
+
+  if (window.renderMathInElement) {
+    renderMathInElement(leftEl, { delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}] });
+    renderMathInElement(rightEl, { delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}] });
+  }
+
+  initWaveCanvases();
+}
+
+function handleNotebookClick(event) {
+  if (currentSpreadIndex === 0) {
+    stepSpread(1);
+  }
+}
+
+function stepSpread(delta) {
+  const target = currentSpreadIndex + delta;
+  if (target < 0 || target >= totalSpreads || isFlipping) return;
+
+  isFlipping = true;
+  const turningSheet = document.getElementById('turningSheet');
+  turningSheet.className = 'turning-page-sheet ' + (delta > 0 ? 'flip-forward' : 'flip-backward');
+  turningSheet.style.display = 'block';
+
+  playPageTurnSound();
+
+  setTimeout(() => {
+    currentSpreadIndex = target;
+    renderCurrentSpread();
+  }, 320);
+
+  setTimeout(() => {
+    turningSheet.style.display = 'none';
+    turningSheet.className = 'turning-page-sheet';
+    isFlipping = false;
+  }, 660);
+}
+
+function jumpToSpread(index) {
+  index = parseInt(index);
+  if (index === currentSpreadIndex || index < 0 || index >= totalSpreads) return;
+  currentSpreadIndex = index;
+  renderCurrentSpread();
+  playPageTurnSound();
+}
+
+function onSliderMove(val) {
+  jumpToSpread(parseInt(val));
+}
+
+window.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') stepSpread(1);
+  if (e.key === 'ArrowLeft' || e.key === 'PageUp') stepSpread(-1);
+});
+
+let audioCtx = null;
+function playPageTurnSound() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const bufferSize = audioCtx.sampleRate * 0.12;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (bufferSize * 0.3));
+    }
+
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(800, audioCtx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.12);
+
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+    gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.12);
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioCtx.destination);
+    noise.start();
+  } catch (err) {}
+}
+
+let travelT = 0;
+let travelPlay = true;
+let animReqId = null;
+
+function toggleWavePlay(type) {
+  if (type === 'traveling') travelPlay = !travelPlay;
+}
+
+function initWaveCanvases() {
+  if (animReqId) cancelAnimationFrame(animReqId);
+
+  const loop = () => {
+    const cTravel = document.getElementById('canvasTravelingWave');
+    if (cTravel) {
+      if (cTravel.width !== cTravel.clientWidth) {
+        cTravel.width = cTravel.clientWidth || 400;
+        cTravel.height = 85;
+      }
+      const ctx = cTravel.getContext('2d');
+      const W = cTravel.width, H = cTravel.height;
+      ctx.clearRect(0, 0, W, H);
+
+      ctx.strokeStyle = '#e2e8f0'; ctx.lineWidth = 1; ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(0, H/2); ctx.lineTo(W, H/2); ctx.stroke();
+      ctx.setLineDash([]);
+
+      const A = 26, lam = 110, k = (2 * Math.PI) / lam;
+      ctx.strokeStyle = '#0284c7'; ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      for (let x = 0; x <= W; x++) {
+        const y = H/2 - A * Math.sin(k * x - travelT * 0.05);
+        x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      ctx.fillStyle = '#0284c7'; ctx.font = 'bold 9px Inter';
+      ctx.fillText('Dirección de propagación (+x) ➔', W - 170, 14);
+
+      if (travelPlay) travelT += 1;
+    }
+
+    animReqId = requestAnimationFrame(loop);
+  };
+  loop();
+}
+
+function openFullscreenSim(url, title) {
+  const modal = document.getElementById('fsModal');
+  const iframe = document.getElementById('fsIframe');
+  const titleEl = document.getElementById('fsModalTitle');
+
+  titleEl.textContent = title;
+  iframe.src = url;
+  modal.classList.add('active');
+}
+
+function closeFullscreenSim() {
+  const modal = document.getElementById('fsModal');
+  const iframe = document.getElementById('fsIframe');
+  iframe.src = '';
+  modal.classList.remove('active');
+}
+
+function reloadIframe(id) {
+  const frame = document.getElementById(id);
+  if (frame) frame.src = frame.src;
+}
+
+(function() {
+  const canvas = document.getElementById('bg-ambient');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const particles = [];
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < 40; i++) {
+    particles.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.25,
+      vy: (Math.random() - 0.5) * 0.25,
+      r: Math.random() * 2 + 0.8,
+      alpha: Math.random() * 0.4 + 0.1
+    });
+  }
+
+  function loop() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(56, 189, 248, ${p.alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(loop);
+  }
+  loop();
+})();
+
+renderCurrentSpread();
+</script>
+
+</body>
+</html>

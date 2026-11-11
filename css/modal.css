@@ -1,0 +1,195 @@
+/**
+ * modal.css
+ * Ventana modal ampliada sincronizada: estados maximizado, restaurado,
+ * colapsado/minimizado, pantalla completa nativa y animación fluida.
+ */
+
+.expanded-modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(10px);
+  z-index: 80;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  transition: all 0.25s ease;
+}
+
+.expanded-modal-backdrop.active {
+  display: flex;
+}
+
+.expanded-window {
+  background: var(--bg-secondary);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(59, 130, 246, 0.15);
+  width: 90vw;
+  height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+/* Estado Maximizado */
+.expanded-window.maximized {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0;
+  border: none;
+}
+
+.expanded-modal-backdrop:has(.expanded-window.maximized) {
+  padding: 0;
+}
+
+/* Estado Colapsado / Minimizado (Widget flotante en esquina) */
+.expanded-window.collapsed {
+  position: fixed;
+  bottom: 80px;
+  right: 25px;
+  width: 380px !important;
+  height: 52px !important;
+  z-index: 95;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+  border-radius: var(--radius-md);
+}
+
+.expanded-modal-backdrop:has(.expanded-window.collapsed) {
+  background: transparent;
+  backdrop-filter: none;
+  pointer-events: none;
+}
+
+.expanded-window.collapsed .modal-body,
+.expanded-window.collapsed .modal-playback-bar {
+  display: none !important;
+}
+
+.expanded-window.collapsed {
+  pointer-events: auto;
+}
+
+/* Barra de Título de la Ventana Modal */
+.modal-header-bar {
+  height: 50px;
+  background: var(--bg-primary);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1rem;
+  user-select: none;
+}
+
+.modal-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.modal-window-icon {
+  font-size: 1.1rem;
+}
+
+.modal-window-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.modal-sync-badge {
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.35);
+  color: #34d399;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.modal-sync-badge::before {
+  content: "";
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background-color: var(--accent-emerald);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--accent-emerald);
+}
+
+/* Botones de control de la ventana (estilo SO) */
+.modal-window-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.modal-win-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-win-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text-primary);
+}
+
+.modal-win-btn.close-btn:hover {
+  background: var(--accent-rose);
+  color: #ffffff;
+}
+
+/* Cuerpo del modal con el canvas */
+.modal-body {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #000000;
+}
+
+.modal-canvas-element {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Barra de controles esenciales en el modal */
+.modal-playback-bar {
+  height: 58px;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.25rem;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .expanded-window {
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+}

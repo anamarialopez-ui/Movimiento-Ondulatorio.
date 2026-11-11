@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Simulador de Movimiento Ondulatorio y Principio de Superposición en Física III con plano cartesiano estilo GeoGebra, muestreo adaptativo, teclado matemático y experiencia didáctica." />
+  <title>Movimiento Ondulatorio y Superposición | Física III</title>
+
+  <!-- Fuentes tipográficas modernas -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX para renderizado matemático de alta fidelidad -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+
+  <!-- Math.js para análisis y evaluación simbólica -->
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjs@12.4.1/lib/browser/math.min.js"></script>
+
+  <!-- Hojas de estilo modularizadas -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/geogebra-canvas.css" />
+  <link rel="stylesheet" href="css/components.css" />
+  <link rel="stylesheet" href="css/keyboard.css" />
+  <link rel="stylesheet" href="css/modal.css" />
+</head>
+<body>
+  <div class="app-container">
+    <!-- Encabezado / Header de la Aplicación -->
+    <header class="app-header" role="banner">
+      <div class="brand-section">
+        <div class="brand-logo" aria-hidden="true">ψ</div>
+        <div class="brand-titles">
+          <h1 class="brand-title">Movimiento Ondulatorio y Superposición</h1>
+          <span class="brand-subtitle">Física III • Laboratorio Virtual Interactivo</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Botón para abrir Ventana Modal Ampliada (Requisito 7) -->
+        <button type="button" class="btn-header primary" id="btnOpenModalGraph" title="Abrir gráfico en ventana modal ampliada">
+          <span>🗖</span>
+          <span>Modal Ampliado</span>
+        </button>
+
+        <button type="button" class="btn-header" id="btnExportJSON" title="Descargar configuración en formato JSON">
+          <span>💾</span>
+          <span>Exportar</span>
+        </button>
+
+        <label class="btn-header" title="Cargar configuración desde archivo JSON" style="cursor: pointer;">
+          <span>📂</span>
+          <span>Importar</span>
+          <input type="file" id="fileImportJSON" accept=".json" style="display: none;" />
+        </label>
+
+        <button type="button" class="btn-header" id="btnExportPNG" title="Descargar gráfico de alta resolución como imagen PNG">
+          <span>📷</span>
+          <span>Captura</span>
+        </button>
+
+        <a href="OndasEstacionarias.html" class="btn-header primary" style="text-decoration:none;" title="Ir al nuevo laboratorio de Ondas Estacionarias en Cuerda">
+          <span>∿</span>
+          <span>Ondas Estacionarias</span>
+        </a>
+
+        <a href="EfectoDoppler.html" class="btn-header" style="text-decoration:none;" title="Ir al laboratorio de Efecto Doppler Acústico">
+          <span>📡</span>
+          <span>Efecto Doppler</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Contenido Principal: Panel de Control y Plano Cartesiano -->
+    <main class="app-main" role="main">
+      <!-- Panel Lateral Izquierdo: Editor de Ondas y Didáctica -->
+      <aside class="sidebar-panel" aria-label="Panel de configuración de ondas y didáctica">
+        <nav class="sidebar-tabs" role="tablist">
+          <button type="button" class="sidebar-tab-btn active" data-tab="tab-waves" role="tab" aria-selected="true" id="tabBtnWaves">
+            <span>🌊</span>
+            <span>Ondas y Ecuaciones</span>
+          </button>
+          <button type="button" class="sidebar-tab-btn" data-tab="tab-didactic" role="tab" aria-selected="false" id="tabBtnDidactic">
+            <span>🎓</span>
+            <span>Didáctica y Presets</span>
+          </button>
+          <button type="button" class="sidebar-tab-btn" data-tab="tab-resultant" role="tab" aria-selected="false" id="tabBtnResultant">
+            <span>✨</span>
+            <span>Resultante y Estilos</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-content">
+          <!-- Pestaña 1: Editor de Ondas Componentes -->
+          <div class="sidebar-tab-pane active" id="pane-waves" role="tabpanel">
+            <!-- Tarjeta Resumen de la Resultante -->
+            <div class="resultant-card">
+              <div class="resultant-card-header">
+                <div class="resultant-title">
+                  <span class="resultant-icon">∑</span>
+                  <span>Onda Resultante (Superposición)</span>
+                </div>
+                <label class="toggle-switch" title="Mostrar u ocultar la resultante">
+                  <input type="checkbox" id="resVisibleToggle" checked />
+                  <span class="toggle-slider"></span>
+                </label>
+              </div>
+              <p style="font-size: 0.76rem; color: var(--text-secondary);">
+                Suma algebraica punto a punto de todas las ondas componentes habilitadas en la superposición: \( y(x,t) = \sum y_i(x,t) \).
+              </p>
+            </div>
+
+            <!-- Contenedor dinámico de tarjetas de ondas -->
+            <div class="waves-list" id="wavesContainer">
+              <!-- Renderizado dinámico vía ui.js -->
+            </div>
+
+            <!-- Botón para añadir nueva onda -->
+            <button type="button" class="btn-add-wave" id="btnAddWave">
+              <span>➕</span>
+              <span>Añadir Nueva Onda Componente</span>
+            </button>
+          </div>
+
+          <!-- Pestaña 2: Didáctica, Presets y Preguntas Predictivas -->
+          <div class="sidebar-tab-pane" id="pane-didactic" role="tabpanel">
+            <div class="didactic-section">
+              <div class="preset-picker-box">
+                <label for="presetSelect" style="font-size: 0.8rem; font-weight: 700; color: var(--text-secondary);">
+                  Seleccionar Ejemplo Didáctico:
+                </label>
+                <div style="display: flex; gap: 0.5rem;">
+                  <select id="presetSelect" class="preset-select" style="flex: 1;"></select>
+                  <button type="button" class="btn-header primary" id="btnLoadPreset" style="padding: 0.4rem 0.75rem;">
+                    Cargar
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tarjeta de explicación física teórica -->
+              <div class="didactic-card">
+                <div class="didactic-header">
+                  <div class="didactic-title" id="didacticTitle">Cargando preset...</div>
+                  <div class="didactic-desc" id="didacticDesc"></div>
+                </div>
+                <div class="didactic-theory" id="didacticTheoryContent"></div>
+
+                <!-- Pregunta orientadora predictiva con opciones -->
+                <div id="didacticQuizContainer"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pestaña 3: Configuración de la Resultante y Estilos -->
+          <div class="sidebar-tab-pane" id="pane-resultant" role="tabpanel">
+            <div class="didactic-card">
+              <h2 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.75rem; color: var(--text-primary);">
+                Estilo de la Onda Resultante
+              </h2>
+              <div class="resultant-controls-grid">
+                <div class="res-prop-item">
+                  <label for="resColorPicker">Color de trazo:</label>
+                  <input type="color" id="resColorPicker" value="#10b981" class="prop-color-input" />
+                </div>
+                <div class="res-prop-item">
+                  <label for="resWidthRange">Grosor de línea (<span id="resWidthVal">3.5px</span>):</label>
+                  <input type="range" id="resWidthRange" min="1.5" max="8" step="0.5" value="3.5" />
+                </div>
+                <div class="res-prop-item" style="grid-column: span 2;">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="resGlowToggle" checked />
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label-hint">Resplandor luminoso (Glow)</span>
+                  </label>
+                </div>
+                <div class="res-prop-item" style="grid-column: span 2;">
+                  <label class="toggle-switch">
+                    <input type="checkbox" id="resFillToggle" checked />
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-label-hint">Sombreado translúcido bajo la curva</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div class="didactic-card" style="margin-top: 1rem;">
+              <h2 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--text-primary);">
+                Paleta Rápida de Temas
+              </h2>
+              <button type="button" class="btn-ctrl" id="btnQuickPalette" style="width: 100%; margin-top: 0.5rem;">
+                <span>🎨</span>
+                <span>Configurar Paleta Gráfica Completa</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Panel Derecho: Lienzo Cartesiano estilo GeoGebra -->
+      <section class="canvas-panel" aria-label="Plano cartesiano y visualización gráfica">
+        <div class="canvas-wrapper">
+          <canvas id="mainCanvas" class="canvas-element" tabindex="0" aria-label="Lienzo cartesiano interactivo de ondas"></canvas>
+
+          <!-- Barra flotante de interruptores toggle para mostrar/ocultar gráficas en el lienzo -->
+          <div class="canvas-quick-toggles-bar" id="canvasQuickToggles" aria-label="Interruptores para mostrar u ocultar gráficas individualmente"></div>
+
+          <!-- Barra flotante de herramientas estilo GeoGebra (Requisitos 6 y GeoGebra) -->
+          <div class="geogebra-floating-toolbar" role="toolbar" aria-label="Herramientas del gráfico">
+            <button type="button" class="tb-btn" id="tbBtnZoomIn" title="Acercar (Zoom In)" aria-label="Zoom In">➕</button>
+            <button type="button" class="tb-btn" id="tbBtnZoomOut" title="Alejar (Zoom Out)" aria-label="Zoom Out">➖</button>
+            <button type="button" class="tb-btn" id="tbBtnResetView" title="Restablecer vista centrada (1:1)" aria-label="Restablecer Vista">⌂</button>
+            <div class="tb-separator"></div>
+            <button type="button" class="tb-btn active" id="tbBtnToolPan" title="Herramienta Desplazar lienzo (Pan)" aria-label="Desplazar">✋</button>
+            <button type="button" class="tb-btn" id="tbBtnToolInspect" title="Inspector / Sonda puntual (x)" aria-label="Inspector">🎯</button>
+            <button type="button" class="tb-btn" id="tbBtnToggleGrid" title="Alternar visibilidad de cuadrículas" aria-label="Cuadrícula">▦</button>
+            <div class="tb-separator"></div>
+            <button type="button" class="tb-btn" id="tbBtnPalette" title="Abrir paleta de estilos y temas" aria-label="Paleta de Estilos">🎨</button>
+          </div>
+
+          <!-- Inspector Puntual Flotante (Requisito 8) -->
+          <div class="inspector-floating-panel" id="inspectorPanel">
+            <div class="inspector-header">
+              <span class="inspector-title">🎯 Sonda Puntual de Superposición</span>
+            </div>
+            <div class="inspector-coords">
+              <span>Posición x:</span>
+              <strong id="probeXVal">0.000 m</strong>
+            </div>
+            <div class="inspector-res-row">
+              <span>y_total (Suma):</span>
+              <span id="probeResVal" style="font-family: var(--font-mono);">0.000 m</span>
+            </div>
+            <div class="probe-components-list" id="probeComponentsList"></div>
+          </div>
+
+          <!-- Indicador de ayuda al usuario -->
+          <div class="canvas-hint-overlay">
+            <span class="canvas-hint-icon">💡</span>
+            <span>Rueda para zoom • Arrastra para desplazar • Arrastra sobre los ejes para reescalar independientemente X o Y</span>
+          </div>
+        </div>
+
+        <!-- Barra Inferior de Reproducción y Tiempo Físico -->
+        <footer class="playback-bar" role="region" aria-label="Controles de simulación física">
+          <div class="playback-controls-left">
+            <button type="button" class="btn-ctrl btn-play-pause playing" title="Iniciar o pausar simulación (Espacio)">
+              ⏸ Pausa
+            </button>
+            <button type="button" class="btn-ctrl btn-step-backward" title="Retroceder 0.05 segundos">
+              ⏮ Paso
+            </button>
+            <button type="button" class="btn-ctrl btn-step-forward" title="Avanzar 0.05 segundos">
+              Paso ⏭
+            </button>
+            <button type="button" class="btn-ctrl btn-reset-time" title="Restablecer tiempo a cero (t = 0)">
+              ↺ Reiniciar
+            </button>
+          </div>
+
+          <div class="playback-scrubber-center">
+            <span style="font-size: 0.78rem; font-weight: 600; color: var(--text-secondary);">Tiempo t:</span>
+            <input type="range" class="time-slider" min="0" max="20" step="0.02" value="0" title="Control deslizante de tiempo físico" />
+            <div class="time-readout">
+              <span class="time-readout-val">0.00 s</span>
+            </div>
+          </div>
+
+          <div class="playback-controls-right">
+            <span style="font-size: 0.78rem; color: var(--text-secondary);">Velocidad:</span>
+            <select class="select-speed" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.35rem; border-radius: var(--radius-sm); font-size: 0.8rem;">
+              <option value="0.25">0.25×</option>
+              <option value="0.5">0.5×</option>
+              <option value="1.0" selected>1.0× (Normal)</option>
+              <option value="1.5">1.5×</option>
+              <option value="2.0">2.0×</option>
+            </select>
+            <button type="button" class="btn-ctrl btn-direction" title="Invertir dirección del tiempo">
+              ⇄ Sentido
+            </button>
+          </div>
+        </footer>
+      </section>
+    </main>
+
+    <!-- Contenedor del Teclado Virtual Matemático (Requisito Teclado) -->
+    <div id="virtualKeyboardContainer" class="virtual-keyboard-container" role="dialog" aria-label="Teclado Virtual Matemático"></div>
+
+    <!-- Modal de Paleta de Estilos (Requisito 6) -->
+    <div class="palette-modal" id="paletteModal" role="dialog" aria-modal="true" aria-labelledby="paletteTitle">
+      <div class="palette-card">
+        <div class="palette-header">
+          <div class="palette-title" id="paletteTitle">
+            <span>🎨</span>
+            <span>Paleta de Estilos Gráficos</span>
+          </div>
+          <button type="button" class="btn-icon-action" id="paletteBtnClose" style="font-size: 1.2rem;">✕</button>
+        </div>
+
+        <div class="palette-form-grid">
+          <div class="pal-field" style="grid-column: span 2;">
+            <label for="paletteThemeSelect">Tema predeterminado:</label>
+            <select id="paletteThemeSelect">
+              <option value="dark">Modo Oscuro Pro (Predeterminado)</option>
+              <option value="geogebra">GeoGebra Clásico (Fondo Claro)</option>
+              <option value="paper">Papel Milimetrado Técnico</option>
+              <option value="contrast">Alto Contraste Accesible</option>
+            </select>
+          </div>
+
+          <div class="pal-field">
+            <label for="palBgColor">Fondo del gráfico:</label>
+            <input type="color" id="palBgColor" value="#0f172a" />
+          </div>
+
+          <div class="pal-field">
+            <label for="palAxisColor">Color de ejes cartesianos:</label>
+            <input type="color" id="palAxisColor" value="#94a3b8" />
+          </div>
+
+          <div class="pal-field">
+            <label for="palAxisWidth">Grosor de ejes (px):</label>
+            <input type="number" id="palAxisWidth" min="1" max="4" step="0.5" value="1.8" />
+          </div>
+
+          <div class="pal-field">
+            <label for="palLabelFontSize">Tamaño texto etiquetas (px):</label>
+            <input type="number" id="palLabelFontSize" min="10" max="20" step="1" value="13" />
+          </div>
+
+          <div class="pal-field">
+            <label for="palMajorGridColor">Color cuadrícula mayor:</label>
+            <input type="color" id="palMajorGridColor" value="#334155" />
+          </div>
+
+          <div class="pal-field">
+            <label for="palMinorGridColor">Color cuadrícula menor:</label>
+            <input type="color" id="palMinorGridColor" value="#1e293b" />
+          </div>
+
+          <div class="pal-field">
+            <label for="palGridSubs">Subdivisiones de cuadrícula:</label>
+            <select id="palGridSubs">
+              <option value="5" selected>5 (Estándar)</option>
+              <option value="10">10 (Papel Milimetrado fino)</option>
+              <option value="2">2 (Espaciado amplio)</option>
+            </select>
+          </div>
+
+          <div class="pal-field" style="grid-column: span 2; display: flex; flex-direction: row; gap: 1rem; margin-top: 0.5rem;">
+            <label class="toggle-switch">
+              <input type="checkbox" id="palShowVectors" checked />
+              <span class="toggle-slider"></span>
+              <span class="toggle-label-hint">Vectores de propagación (v)</span>
+            </label>
+
+            <label class="toggle-switch">
+              <input type="checkbox" id="palShowMinorGrid" checked />
+              <span class="toggle-slider"></span>
+              <span class="toggle-label-hint">Cuadrícula menor</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Ventana Modal Ampliada Sincronizada (Requisito 7) -->
+    <div class="expanded-modal-backdrop" id="modalExpandedGraph" role="dialog" aria-modal="true" aria-hidden="true">
+      <div class="expanded-window" id="modalWindowBox">
+        <header class="modal-header-bar">
+          <div class="modal-title-group">
+            <span class="modal-window-icon">📈</span>
+            <span class="modal-window-title">Visualización Ampliada de Superposición</span>
+            <span class="modal-sync-badge">Sincronizado en Vivo</span>
+          </div>
+
+          <div class="modal-window-controls">
+            <button type="button" class="modal-win-btn" id="modalBtnMinimize" title="Minimizar / Colapsar ventana">🗕</button>
+            <button type="button" class="modal-win-btn" id="modalBtnMaximize" title="Maximizar / Restaurar ventana">🗖</button>
+            <button type="button" class="modal-win-btn" id="modalBtnFullscreen" title="Pantalla completa">⛶</button>
+            <button type="button" class="modal-win-btn close-btn" id="modalBtnClose" title="Cerrar modal (Escape)">✕</button>
+          </div>
+        </header>
+
+        <div class="modal-body">
+          <canvas id="modalCanvas" class="modal-canvas-element" aria-label="Plano cartesiano ampliado"></canvas>
+          <!-- Barra flotante de interruptores toggle en el modal -->
+          <div class="canvas-quick-toggles-bar modal-quick-toggles" id="modalQuickToggles" aria-label="Interruptores de gráficas en modal"></div>
+        </div>
+
+        <footer class="modal-playback-bar">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <button type="button" class="btn-ctrl btn-play-pause playing">⏸ Pausa</button>
+            <button type="button" class="btn-ctrl btn-step-backward">⏮</button>
+            <button type="button" class="btn-ctrl btn-step-forward">⏭</button>
+            <button type="button" class="btn-ctrl btn-reset-time">↺</button>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.75rem; flex: 1; max-width: 480px;">
+            <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-secondary);">t:</span>
+            <input type="range" class="time-slider" min="0" max="20" step="0.02" value="0" />
+            <div class="time-readout"><span class="time-readout-val">0.00 s</span></div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <span style="font-size: 0.8rem; color: var(--text-secondary);">Velocidad:</span>
+            <select class="select-speed" style="background: var(--bg-tertiary); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.3rem; border-radius: var(--radius-sm); font-size: 0.8rem;">
+              <option value="0.25">0.25×</option>
+              <option value="0.5">0.5×</option>
+              <option value="1.0" selected>1.0×</option>
+              <option value="1.5">1.5×</option>
+              <option value="2.0">2.0×</option>
+            </select>
+          </div>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <!-- Enlace a los módulos JavaScript -->
+  <script src="js/math-engine.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/renderer.js"></script>
+  <script src="js/virtual-keyboard.js"></script>
+  <script src="js/didactic.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/app.js"></script>
+
+  <script>
+    // Conectar navegación entre pestañas del panel lateral
+    document.addEventListener('DOMContentLoaded', () => {
+      const tabBtns = document.querySelectorAll('.sidebar-tab-btn');
+      const panes = {
+        'tab-waves': document.getElementById('pane-waves'),
+        'tab-didactic': document.getElementById('pane-didactic'),
+        'tab-resultant': document.getElementById('pane-resultant')
+      };
+
+      tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+          tabBtns.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-selected', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-selected', 'true');
+
+          const target = btn.dataset.tab;
+          Object.keys(panes).forEach(k => {
+            if (panes[k]) panes[k].classList.remove('active');
+          });
+          if (panes[target]) {
+            panes[target].classList.add('active');
+          }
+        });
+      });
+
+      const btnQuickPal = document.getElementById('btnQuickPalette');
+      if (btnQuickPal) {
+        btnQuickPal.addEventListener('click', () => {
+          const palModal = document.getElementById('paletteModal');
+          if (palModal) palModal.classList.add('active');
+        });
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Simulador Avanzado e Interactivo de Ondas Estacionarias con Extremos Fijos en una Cuerda. Física III - Movimiento Ondulatorio. Visualización de nodos, vientres, descomposición en ondas viajeras, osciloscopio y análisis energético." />
+  <title>Ondas Estacionarias con Extremos Fijos | Física III</title>
+
+  <!-- Tipografías de alta legibilidad -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+
+  <!-- KaTeX para renderizado matemático nítido -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Estilos del Simulador de Ondas Estacionarias -->
+  <link rel="stylesheet" href="css/standing-waves.css" />
+  <script>
+    if (window.self !== window.top || window.location.search.includes('embed=notebook')) {
+      document.documentElement.classList.add('embed-notebook-mode');
+      window.addEventListener('DOMContentLoaded', function() { document.body.classList.add('embed-notebook-mode'); });
+    }
+  </script>
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- ENCABEZADO / HEADER PRINCIPAL                                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <header class="app-header" role="banner">
+      <div class="brand-section">
+        <div class="brand-icon" aria-hidden="true">∿</div>
+        <div class="brand-titles">
+          <h1>
+            Ondas Estacionarias en Cuerda
+            <span class="badge-tag">Extremos Fijos • Física III</span>
+          </h1>
+          <span class="brand-subtitle">Laboratorio Virtual de Resonancia, Modos Normales y Conservación de Energía</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <!-- Audio Sintetizador Web Audio API -->
+        <button type="button" class="header-btn" id="btnAudio" title="Activar sonido armónico realista de la cuerda con Web Audio API">
+          <span>🔈</span>
+          <span>Audio: Silenciado</span>
+        </button>
+
+        <!-- Fundamentación Teórica -->
+        <button type="button" class="header-btn" id="btnTheory" title="Abrir teoría, deducciones matemáticas y ecuaciones fundamentales">
+          <span>📖</span>
+          <span>Teoría y Fórmulas</span>
+        </button>
+
+        <!-- Retos Didácticos / Cuestionario -->
+        <button type="button" class="header-btn" id="btnQuiz" title="Poner a prueba tus conocimientos con ejercicios interactivos">
+          <span>🎯</span>
+          <span>Retos y Preguntas</span>
+        </button>
+
+        <!-- Captura PNG -->
+        <button type="button" class="header-btn" id="btnExportPNG" title="Descargar captura de alta resolución del gráfico actual">
+          <span>📷</span>
+          <span>Captura</span>
+        </button>
+
+        <!-- Exportar Datos CSV -->
+        <button type="button" class="header-btn" id="btnExportCSV" title="Descargar tabla de datos físicos y resultados en formato CSV para informe de laboratorio">
+          <span>📊</span>
+          <span>Datos CSV</span>
+        </button>
+
+        <!-- Alternar Tema Claro / Oscuro -->
+        <button type="button" class="header-btn" id="btnTheme" title="Alternar entre modo oscuro y modo claro">
+          <span>🌙</span>
+          <span>Tema Oscuro</span>
+        </button>
+
+        <!-- Enlaces cruzados a los otros simuladores del curso -->
+        <a href="index.html" class="header-btn primary" title="Ir al laboratorio de Movimiento Ondulatorio y Superposición">
+          <span>🌊</span>
+          <span>Superposición</span>
+        </a>
+
+        <a href="EfectoDoppler.html" class="header-btn" title="Ir al laboratorio de Efecto Doppler Acústico">
+          <span>📡</span>
+          <span>Efecto Doppler</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- BARRA DE CASOS DIDÁCTICOS (PRESETS)                                -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <section class="presets-bar" aria-label="Casos de estudio preconfigurados">
+      <span class="presets-label">⚡ Casos de Estudio:</span>
+      <button type="button" class="btn-preset" data-preset="fundamental" title="Primer armónico: 1 solo vientre de oscilación, longitud de onda λ = 2L">
+        <span>🎵</span> 1. Modo Fundamental (n = 1)
+      </button>
+      <button type="button" class="btn-preset" data-preset="harmonic2" title="Segundo armónico: 2 vientres, 1 nodo en el punto central, λ = L">
+        <span>🎻</span> 2. Segundo Armónico (n = 2)
+      </button>
+      <button type="button" class="btn-preset" data-preset="harmonic3" title="Tercer armónico: 3 vientres en oposición de fase alternada">
+        <span>🎸</span> 3. Tercer Armónico (n = 3)
+      </button>
+      <button type="button" class="btn-preset" data-preset="guitar" title="Cuerda de guitarra acústica estándar afinada en Mi grave (E2, ~82 Hz)">
+        <span>🎼</span> 4. Cuerda de Guitarra (E2)
+      </button>
+      <button type="button" class="btn-preset" data-preset="melde" title="Experimento clásico de Melde con cuerda tensa de laboratorio (n = 4)">
+        <span>🔬</span> 5. Tubo / Melde Lab (n = 4)
+      </button>
+      <button type="button" class="btn-preset" data-preset="resonance" title="Patrón resonante denso de alta frecuencia (n = 6)">
+        <span>💫</span> 6. Alta Resonancia (n = 6)
+      </button>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- CUERPO PRINCIPAL DE LA SIMULACIÓN                                  -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <main class="app-body" role="main">
+
+      <!-- ── 1. PANEL LATERAL IZQUIERDO: CONTROLES FÍSICOS ────────────── -->
+      <aside class="controls-sidebar" aria-label="Panel de parámetros de la cuerda y visualización">
+
+        <!-- Tarjeta 1: Parámetros del Medio -->
+        <div class="card-panel">
+          <div class="card-title">
+            <span>1. Parámetros del Medio</span>
+            <span class="control-unit">SI [N, kg, m]</span>
+          </div>
+
+          <!-- Tensión (T) -->
+          <div class="control-row">
+            <div class="control-label-group">
+              <label for="numTension" class="control-label">Tensión de la cuerda (T)</label>
+              <span class="control-unit">N</span>
+            </div>
+            <div class="control-inputs">
+              <input type="range" id="sliderTension" class="control-slider" min="10" max="300" step="1" value="100" />
+              <input type="number" id="numTension" class="control-num" min="10" max="300" step="1" value="100" />
+            </div>
+          </div>
+
+          <!-- Densidad Lineal (mu) -->
+          <div class="control-row">
+            <div class="control-label-group">
+              <label for="numDensity" class="control-label">Densidad lineal (μ)</label>
+              <span class="control-unit">kg/m</span>
+            </div>
+            <div class="control-inputs">
+              <input type="range" id="sliderDensity" class="control-slider" min="0.001" max="0.050" step="0.001" value="0.010" />
+              <input type="number" id="numDensity" class="control-num" min="0.001" max="0.050" step="0.001" value="0.010" />
+            </div>
+          </div>
+
+          <!-- Longitud (L) -->
+          <div class="control-row">
+            <div class="control-label-group">
+              <label for="numLength" class="control-label">Longitud entre extremos (L)</label>
+              <span class="control-unit">m</span>
+            </div>
+            <div class="control-inputs">
+              <input type="range" id="sliderLength" class="control-slider" min="0.5" max="6.0" step="0.1" value="2.0" />
+              <input type="number" id="numLength" class="control-num" min="0.5" max="6.0" step="0.1" value="2.0" />
+            </div>
+          </div>
+
+          <!-- Amplitud (A) -->
+          <div class="control-row">
+            <div class="control-label-group">
+              <label for="numAmplitude" class="control-label">Amplitud viajera (A)</label>
+              <span class="control-unit">m (máx 2A)</span>
+            </div>
+            <div class="control-inputs">
+              <input type="range" id="sliderAmplitude" class="control-slider" min="0.05" max="0.60" step="0.01" value="0.35" />
+              <input type="number" id="numAmplitude" class="control-num" min="0.05" max="0.60" step="0.01" value="0.35" />
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta 2: Armónicos y Modos de Vibración -->
+        <div class="card-panel">
+          <div class="card-title">
+            <span>2. Armónico / Modo Normal</span>
+            <span class="control-unit">n ∈ ℕ</span>
+          </div>
+
+          <div class="control-row">
+            <div class="control-label-group">
+              <label for="numHarmonic" class="control-label">Número de armónico (n)</label>
+              <span class="control-unit">Modo</span>
+            </div>
+            <div class="control-inputs">
+              <input type="range" id="sliderHarmonic" class="control-slider" min="1" max="10" step="1" value="1" />
+              <input type="number" id="numHarmonic" class="control-num" min="1" max="10" step="1" value="1" />
+            </div>
+          </div>
+
+          <!-- Selector rápido de pastillas 1..8 -->
+          <div class="harmonic-pills-grid" role="group" aria-label="Selector de armónico rápido">
+            <button type="button" class="harmonic-pill active" data-harmonic="1">n = 1</button>
+            <button type="button" class="harmonic-pill" data-harmonic="2">n = 2</button>
+            <button type="button" class="harmonic-pill" data-harmonic="3">n = 3</button>
+            <button type="button" class="harmonic-pill" data-harmonic="4">n = 4</button>
+            <button type="button" class="harmonic-pill" data-harmonic="5">n = 5</button>
+            <button type="button" class="harmonic-pill" data-harmonic="6">n = 6</button>
+            <button type="button" class="harmonic-pill" data-harmonic="7">n = 7</button>
+            <button type="button" class="harmonic-pill" data-harmonic="8">n = 8</button>
+          </div>
+        </div>
+
+        <!-- Tarjeta 3: Capas Visuales y Modos de Análisis -->
+        <div class="card-panel">
+          <div class="card-title">
+            <span>3. Capas Visuales</span>
+            <span class="control-unit">Filtros</span>
+          </div>
+
+          <div class="toggle-grid">
+            <label class="toggle-item">
+              <span>🌊 Onda Estacionaria Principal</span>
+              <input type="checkbox" id="toggleStandingWave" checked />
+            </label>
+            <label class="toggle-item">
+              <span>📐 Envolvente de Amplitud (±2A)</span>
+              <input type="checkbox" id="toggleEnvelope" checked />
+            </label>
+            <label class="toggle-item">
+              <span>↔ Descomposición en Viajeras (y₁ e y₂)</span>
+              <input type="checkbox" id="toggleTravelingWaves" />
+            </label>
+            <label class="toggle-item">
+              <span>🔴 Nodos (N) y Vientres (A)</span>
+              <input type="checkbox" id="toggleNodesAntinodes" checked />
+            </label>
+            <label class="toggle-item">
+              <span>⚪ Cuentas / Partículas de Masa</span>
+              <input type="checkbox" id="toggleParticles" />
+            </label>
+            <label class="toggle-item">
+              <span>⬆ Vectores de Velocidad (vᵧ)</span>
+              <input type="checkbox" id="toggleVectors" />
+            </label>
+            <label class="toggle-item">
+              <span>✨ Efecto Estroboscópico (Trazas)</span>
+              <input type="checkbox" id="toggleStrobe" />
+            </label>
+          </div>
+        </div>
+
+        <!-- Tarjeta 4: Sonda Puntual de Posición -->
+        <div class="card-panel">
+          <div class="card-title">
+            <span>4. Sonda Puntual (x₀)</span>
+            <span class="control-unit">Osciloscopio</span>
+          </div>
+
+          <div class="control-row">
+            <div class="control-label-group">
+              <label for="numProbe" class="control-label">Posición longitudinal (x₀)</label>
+              <span class="control-unit">m</span>
+            </div>
+            <div class="control-inputs">
+              <input type="range" id="sliderProbe" class="control-slider" min="0" max="2.0" step="0.05" value="1.0" />
+              <input type="number" id="numProbe" class="control-num" min="0" max="2.0" step="0.05" value="1.0" />
+            </div>
+          </div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">
+            💡 Tip: Puedes arrastrar la sonda interactiva directamente sobre el gráfico con el ratón o en pantalla táctil.
+          </p>
+        </div>
+
+      </aside>
+
+      <!-- ── 2. ÁREA CENTRAL: CANVAS + CONTROLES + TELEMETRÍA ─────────── -->
+      <section class="simulation-main" aria-label="Visualización gráfica interactiva y telemetría">
+
+        <!-- Lienzo Canvas 2D Principal -->
+        <div class="canvas-card">
+          <div class="canvas-wrapper">
+            <canvas id="waveCanvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Barra Completa de Controles de Movimiento -->
+        <div class="motion-controls-bar">
+          <div class="motion-buttons-row">
+            <!-- Grupo de Reproducción y Pasos -->
+            <div class="btn-group-motion">
+              <button type="button" class="btn-motion btn-warning" id="btnPlayPause" title="Alternar reproducción o pausa (Barra Espaciadora)">
+                <span class="icon">⏸</span>
+                <span>Pausar</span>
+              </button>
+
+              <button type="button" class="btn-motion" id="btnReset" title="Reiniciar tiempo a t = 0 (Tecla R)">
+                <span>⏮</span>
+                <span>Reiniciar</span>
+              </button>
+
+              <button type="button" class="btn-motion" id="btnStepBack" title="Retroceder un paso elemental de tiempo (Flecha Izquierda)">
+                <span>⏪</span>
+                <span>Paso -Δt</span>
+              </button>
+
+              <button type="button" class="btn-motion" id="btnStepForward" title="Avanzar un paso elemental de tiempo (Flecha Derecha)">
+                <span>⏩</span>
+                <span>Paso +Δt</span>
+              </button>
+            </div>
+
+            <!-- Grupo de Saltos Físicos Clave -->
+            <div class="btn-group-motion">
+              <button type="button" class="btn-motion btn-accent" id="btnJumpMax" title="Saltar al instante de máxima elongación en los vientres (|y| = 2A, velocidad v_y = 0)">
+                <span>⛰</span>
+                <span>Vientres Máx</span>
+              </button>
+
+              <button type="button" class="btn-motion btn-accent" id="btnJumpZero" title="Saltar al instante en que la cuerda pasa plana por el eje horizontal (y = 0, velocidad máxima)">
+                <span>➖</span>
+                <span>Cuerda Plana</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Fila de Línea de Tiempo y Selector de Velocidad -->
+          <div class="timeline-speed-row">
+            <div class="timeline-group">
+              <span class="time-label">⏱ Tiempo:</span>
+              <span class="time-display-badge" id="timeDisplay">0.00 s</span>
+              <input type="range" class="time-scrubber" id="timeScrubber" min="0" max="100" step="0.5" value="0" title="Arrastrar para explorar el ciclo de oscilación en el tiempo" />
+            </div>
+
+            <div class="speed-control-group">
+              <span class="speed-label">Velocidad:</span>
+              <span class="control-unit" id="speedValueDisplay" style="min-width:40px;">0.10x</span>
+              <input type="range" class="control-slider speed-slider" id="sliderSpeed" min="0.05" max="2.0" step="0.05" value="0.10" title="Control fino de velocidad" />
+              <button type="button" class="btn-speed active" data-speed="0.10">0.1x</button>
+              <button type="button" class="btn-speed" data-speed="0.25">0.25x</button>
+              <button type="button" class="btn-speed" data-speed="0.50">0.5x</button>
+              <button type="button" class="btn-speed" data-speed="1.00">1.0x</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dual Panel: Osciloscopio Puntual + Medidores de Energía -->
+        <div class="dual-telemetry-grid">
+
+          <!-- Subpanel A: Osciloscopio en el punto x0 -->
+          <div class="telemetry-card">
+            <div class="telemetry-card-header">
+              <span class="telemetry-card-title">
+                <span>📉</span> Osciloscopio Puntual: Elongación en Función del Tiempo
+              </span>
+              <span class="control-unit">y(x₀, t)</span>
+            </div>
+            <div class="scope-wrapper">
+              <canvas id="scopeCanvas"></canvas>
+            </div>
+            <div class="scope-stats">
+              <span>Posición: <strong id="probeXDisplay">1.00 m</strong></span>
+              <span>Elongación: <strong id="probeYDisplay" style="color:var(--accent-cyan);">0.000 m</strong></span>
+              <span>Velocidad: <strong id="probeVyDisplay" style="color:var(--accent-amber);">0.00 m/s</strong></span>
+            </div>
+          </div>
+
+          <!-- Subpanel B: Medidores de Energía Mecánica -->
+          <div class="telemetry-card">
+            <div class="telemetry-card-header">
+              <span class="telemetry-card-title">
+                <span>⚡</span> Conservación de la Energía Mecánica en la Cuerda
+              </span>
+              <span class="control-unit">E = K + U</span>
+            </div>
+
+            <div class="energy-bars-container">
+              <!-- Energía Cinética -->
+              <div class="energy-row">
+                <div class="energy-label-group">
+                  <span class="energy-name" style="color:var(--accent-kinetic);">
+                    <span>●</span> Energía Cinética Total (K)
+                  </span>
+                  <span class="energy-val" id="valKinetic">0.00 J (0%)</span>
+                </div>
+                <div class="energy-bar-track">
+                  <div class="energy-bar-fill fill-kinetic" id="barKinetic"></div>
+                </div>
+              </div>
+
+              <!-- Energía Potencial Elástica -->
+              <div class="energy-row">
+                <div class="energy-label-group">
+                  <span class="energy-name" style="color:var(--accent-amber);">
+                    <span>●</span> Energía Potencial Elástica (U)
+                  </span>
+                  <span class="energy-val" id="valPotential">0.00 J (100%)</span>
+                </div>
+                <div class="energy-bar-track">
+                  <div class="energy-bar-fill fill-potential" id="barPotential"></div>
+                </div>
+              </div>
+
+              <!-- Energía Mecánica Total -->
+              <div class="energy-row">
+                <div class="energy-label-group">
+                  <span class="energy-name" style="color:var(--accent-antinode);">
+                    <span>●</span> Energía Mecánica Total (E = K + U)
+                  </span>
+                  <span class="energy-val" id="valTotal">0.00 J (100%)</span>
+                </div>
+                <div class="energy-bar-track">
+                  <div class="energy-bar-fill fill-total" id="barTotal"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+      </section>
+
+    </main>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- SECCIÓN INFERIOR: TARJETAS DE TELEMETRÍA Y CÁLCULOS ANALÍTICOS    -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <section class="analytical-section" aria-label="Propiedades físicas calculadas">
+      <div class="analytical-grid">
+
+        <!-- 1. Velocidad de propagación -->
+        <div class="stat-box">
+          <div>
+            <div class="stat-header">Velocidad de Propagación en la Cuerda (v)</div>
+            <div class="stat-value" id="calcSpeed">100.00 m/s</div>
+          </div>
+          <div class="stat-formula">
+            $$ v = \sqrt{\frac{T}{\mu}} $$
+          </div>
+        </div>
+
+        <!-- 2. Frecuencia y Periodo -->
+        <div class="stat-box">
+          <div>
+            <div class="stat-header">Frecuencia Propia (fₙ) y Periodo (T)</div>
+            <div class="stat-value" id="calcFreq">50.00 Hz</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">
+              Periodo: <strong id="calcPeriod" style="color:var(--accent-amber);">0.020 s</strong> | ω: <strong id="calcOmega">314.16 rad/s</strong>
+            </div>
+          </div>
+          <div class="stat-formula">
+            $$ f_n = \frac{n}{2L} v = \frac{n}{2L} \sqrt{\frac{T}{\mu}}, \quad T = \frac{1}{f_n} $$
+          </div>
+        </div>
+
+        <!-- 3. Longitud de Onda y Número de Onda -->
+        <div class="stat-box">
+          <div>
+            <div class="stat-header">Longitud de Onda (λₙ) y Número de Onda (k)</div>
+            <div class="stat-value" id="calcWavelength">2.000 m</div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:4px;">
+              Número de onda: <strong id="calcWaveNumber">3.14 rad/m</strong>
+            </div>
+          </div>
+          <div class="stat-formula">
+            $$ \lambda_n = \frac{2L}{n}, \quad k_n = \frac{2\pi}{\lambda_n} = \frac{n\pi}{L} $$
+          </div>
+        </div>
+
+        <!-- 4. Topología de Nodos y Vientres -->
+        <div class="stat-box">
+          <div>
+            <div class="stat-header">Distribución Espacial de Nodos y Vientres</div>
+            <div style="font-size:0.95rem; font-weight:700; color:var(--accent-node); margin-bottom:4px;" id="calcNodesCount">
+              3 nodos (1 interior)
+            </div>
+            <div style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:8px;" id="calcAntinodesCount">
+              2 vientres
+            </div>
+            <div style="font-size:0.75rem; margin-bottom:4px;">
+              Distancia entre nodos: <strong id="calcNodeDistance">1.000 m</strong> (λ/2)
+            </div>
+            <div style="font-size:0.75rem; margin-bottom:8px;">
+              Distancia nodo-vientre: <strong id="calcNodeAntinodeDist">0.500 m</strong> (λ/4)
+            </div>
+            <div id="calcNodesList" style="margin-bottom:4px;"></div>
+            <div id="calcAntinodesList"></div>
+          </div>
+          <div class="stat-formula">
+            $$ x_{\text{nodos}} = m \frac{L}{n}, \quad x_{\text{vientres}} = \left(m + \frac{1}{2}\right) \frac{L}{n} $$
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- MODAL 1: FUNDAMENTACIÓN TEÓRICA Y DEDUCCIÓN MATEMÁTICA            -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="modal-backdrop" id="modalTheory" role="dialog" aria-modal="true" aria-labelledby="theoryTitle">
+      <div class="modal-container">
+        <header class="modal-header">
+          <h2 id="theoryTitle">📖 Fundamentación Teórica: Ondas Estacionarias con Extremos Fijos</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </header>
+        <div class="modal-body">
+          <h3>1. El Principio de Superposición e Interferencia</h3>
+          <p>
+            Una <strong>onda estacionaria</strong> se origina a partir de la interferencia constructiva y destructiva de dos ondas armónicas viajeras de idéntica frecuencia, longitud de onda y amplitud que se propagan en una misma cuerda con sentidos opuestos:
+          </p>
+          <div class="theory-callout">
+            $$ y_1(x, t) = A \operatorname{sen}(kx - \omega t) \quad \text{(viajera hacia la derecha)} $$
+            $$ y_2(x, t) = A \operatorname{sen}(kx + \omega t) \quad \text{(viajera hacia la izquierda)} $$
+          </div>
+          <p>
+            Aplicando la identidad trigonométrica fundamental de suma de senos:
+            $$ \operatorname{sen}(\alpha) + \operatorname{sen}(\beta) = 2 \operatorname{sen}\left(\frac{\alpha + \beta}{2}\right) \cos\left(\frac{\alpha - \beta}{2}\right) $$
+            obtenemos la ecuación canónica de la onda estacionaria:
+          </p>
+          <div class="theory-callout">
+            $$ y(x, t) = y_1(x, t) + y_2(x, t) = 2A \operatorname{sen}(kx) \cos(\omega t) $$
+          </div>
+          <p>
+            Esta ecuación tiene una propiedad matemática crucial: las variables espacial ($x$) y temporal ($t$) están <strong>separadas</strong>. Cada punto de la cuerda oscila con Movimiento Armónico Simple (MAS) a frecuencia angular $\omega$, pero con una amplitud dependiente de su posición:
+            $$ A_{\text{estacionaria}}(x) = 2A |\operatorname{sen}(kx)| $$
+          </p>
+
+          <h3>2. Condiciones de Frontera: Extremos Fijos</h3>
+          <p>
+            Dado que la cuerda está rígidamente sujeta en ambos extremos, la elongación transversal debe anularse forzosamente en las fronteras para todo instante de tiempo $t$:
+          </p>
+          <ul>
+            <li><strong>Extremo izquierdo fijo ($x = 0$):</strong> $y(0, t) = 2A \operatorname{sen}(0) \cos(\omega t) \equiv 0$ (se cumple trivialmente).</li>
+            <li><strong>Extremo derecho fijo ($x = L$):</strong> $y(L, t) = 2A \operatorname{sen}(k L) \cos(\omega t) \equiv 0 \implies \operatorname{sen}(k L) = 0$.</li>
+          </ul>
+          <p>
+            Para que el seno sea nulo, su argumento debe ser un múltiplo entero de $\pi$:
+            $$ k L = n \pi, \quad n \in \{1, 2, 3, \dots\} $$
+            Como el número de onda es $k = \frac{2\pi}{\lambda}$, deducimos la <strong>cuantización de las longitudes de onda permitidas</strong>:
+          </p>
+          <div class="theory-callout">
+            $$ \lambda_n = \frac{2L}{n}, \quad n = 1, 2, 3, \dots $$
+          </div>
+
+          <h3>3. Frecuencias Resonantes (Modos Normales o Armónicos)</h3>
+          <p>
+            La velocidad de propagación de una onda transversal en una cuerda tensa está gobernada por la fórmula de Taylor:
+            $$ v = \sqrt{\frac{T}{\mu}} $$
+            donde $T$ es la tensión [N] y $\mu$ es la densidad lineal de masa [kg/m]. Por tanto, las frecuencias propias o modos normales son:
+          </p>
+          <div class="theory-callout">
+            $$ f_n = \frac{v}{\lambda_n} = \frac{n}{2L} v = \frac{n}{2L} \sqrt{\frac{T}{\mu}} = n f_1 $$
+          </div>
+          <p>
+            El modo $n=1$ se denomina <strong>frecuencia fundamental</strong>. Todos los armónicos superiores son múltiplos enteros de ella ($f_n = n \cdot f_1$).
+          </p>
+
+          <h3>4. Nodos y Vientres (Antinodos)</h3>
+          <ul>
+            <li><strong>Nodos ($y = 0, \forall t$):</strong> Puntos donde $\operatorname{sen}(kx) = 0 \implies x_m = m \frac{L}{n} = m \frac{\lambda_n}{2}$, para $m = 0, 1, \dots, n$. Hay en total $n + 1$ nodos.</li>
+            <li><strong>Vientres o Antinodos ($|y| = 2A$):</strong> Puntos donde $|\operatorname{sen}(kx)| = 1 \implies x_m = (m + \frac{1}{2}) \frac{L}{n} = (2m+1) \frac{\lambda_n}{4}$. Hay exactamente $n$ vientres.</li>
+            <li>La distancia entre dos nodos consecutivos es $\Delta x = \frac{\lambda_n}{2}$.</li>
+            <li>La distancia entre un nodo y el vientre adyacente es $\Delta x = \frac{\lambda_n}{4}$.</li>
+          </ul>
+
+          <h3>5. Conservación de la Energía y Flujo Neto Nulo</h3>
+          <p>
+            En una onda viajera pura la energía viaja indefinidamente hacia adelante con velocidad $v$. Sin embargo, en una <strong>onda estacionaria</strong>, la energía transportada hacia la derecha por $y_1$ es exactamente igual a la transportada hacia la izquierda por $y_2$. Como resultado:
+          </p>
+          <div class="theory-callout">
+            <strong>El flujo neto de potencia promedio a través de cualquier punto de la cuerda es CERO:</strong>
+            $$ \langle P \rangle = 0 $$
+          </div>
+          <p>
+            La energía mecánica total queda <em>atrapada</em> entre los extremos fijos, oscilando continuamente entre <strong>energía potencial elástica</strong> (cuando la cuerda alcanza la curvatura máxima en los vientres y se detiene momentáneamente) y <strong>energía cinética</strong> (cuando la cuerda pasa completamente plana por el eje horizontal con máxima velocidad transversal).
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- MODAL 2: RETOS DIDÁCTICOS Y CUESTIONARIO INTERACTIVO              -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <div class="modal-backdrop" id="modalQuiz" role="dialog" aria-modal="true" aria-labelledby="quizTitle">
+      <div class="modal-container">
+        <header class="modal-header">
+          <h2 id="quizTitle">🎯 Retos y Comprobación de Conceptos</h2>
+          <button type="button" class="modal-close" aria-label="Cerrar modal">&times;</button>
+        </header>
+        <div class="modal-body">
+          <p>Responde a las siguientes preguntas conceptuales y de cálculo físico para validar tu comprensión:</p>
+
+          <!-- Pregunta 1 -->
+          <div class="quiz-question" data-qid="q1">
+            <div class="quiz-question-title">1. En una cuerda con extremos fijos, ¿cuál es la distancia entre dos nodos adyacentes?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-option" data-choice="a">A) Una longitud de onda completa (λ)</button>
+              <button type="button" class="quiz-option" data-choice="b">B) Media longitud de onda (λ / 2)</button>
+              <button type="button" class="quiz-option" data-choice="c">C) Un cuarto de longitud de onda (λ / 4)</button>
+              <button type="button" class="quiz-option" data-choice="d">D) Dos longitudes de onda (2λ)</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Pregunta 2 -->
+          <div class="quiz-question" data-qid="q2">
+            <div class="quiz-question-title">2. ¿Qué ocurre con la velocidad transversal de las partículas en los nodos de la cuerda?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-option" data-choice="a">A) Alcanza su valor máximo cuando la cuerda pasa por y = 0</button>
+              <button type="button" class="quiz-option" data-choice="b">B) Oscila con amplitud 2A</button>
+              <button type="button" class="quiz-option" data-choice="c">C) Es exactamente CERO en todo momento (vy = 0)</button>
+              <button type="button" class="quiz-option" data-choice="d">D) Es proporcional a la frecuencia angular al cuadrado</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+          <!-- Pregunta 3 -->
+          <div class="quiz-question" data-qid="q3">
+            <div class="quiz-question-title">3. Si cuadruplicamos la tensión de la cuerda ($T \to 4T$) manteniendo constantes la longitud y la masa, ¿qué le ocurre a la frecuencia del armónico?</div>
+            <div class="quiz-options">
+              <button type="button" class="quiz-option" data-choice="a">A) Se duplica ($f \to 2f$)</button>
+              <button type="button" class="quiz-option" data-choice="b">B) Se cuadruplica ($f \to 4f$)</button>
+              <button type="button" class="quiz-option" data-choice="c">C) Se reduce a la mitad ($f \to f/2$)</button>
+              <button type="button" class="quiz-option" data-choice="d">D) No cambia porque la longitud es constante</button>
+            </div>
+            <div class="quiz-feedback"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <!-- PIE DE PÁGINA / FOOTER                                             -->
+    <!-- ═══════════════════════════════════════════════════════════════════ -->
+    <footer class="app-footer" role="contentinfo">
+      <div>
+        <strong>Simulador Avanzado de Ondas Estacionarias con Extremos Fijos</strong> • Física III (Movimiento Ondulatorio)
+      </div>
+      <div>
+        Versión 2.0 • Interfaz interactiva de alta fidelidad con Web Audio API y KaTeX
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Scripts modulares del simulador -->
+  <script src="js/standing-waves-physics.js"></script>
+  <script src="js/standing-waves-audio.js"></script>
+  <script src="js/standing-waves-canvas.js"></script>
+  <script src="js/standing-waves-ui.js"></script>
+</body>
+</html>
+
